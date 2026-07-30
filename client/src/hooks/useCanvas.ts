@@ -87,6 +87,57 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       }
     });
 
+    // Zoom and Pan Implementation
+    fbCanvas.on('mouse:wheel', function(opt) {
+      const delta = opt.e.deltaY;
+      let zoom = fbCanvas.getZoom();
+      zoom *= 0.999 ** delta;
+      if (zoom > 10) zoom = 10;
+      if (zoom < 0.1) zoom = 0.1;
+      fbCanvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+    });
+
+    let isDragging = false;
+    let lastPosX = 0;
+    let lastPosY = 0;
+
+    fbCanvas.on('mouse:down', function(opt) {
+      const evt = opt.e as MouseEvent;
+      // Allow panning with Alt key or middle mouse button
+      if (evt.altKey === true || evt.button === 1) {
+        isDragging = true;
+        fbCanvas.selection = false;
+        lastPosX = evt.clientX;
+        lastPosY = evt.clientY;
+      }
+    });
+
+    fbCanvas.on('mouse:move', function(opt) {
+      if (isDragging) {
+        const e = opt.e as MouseEvent;
+        const vpt = fbCanvas.viewportTransform;
+        if (vpt) {
+          vpt[4] += e.clientX - lastPosX;
+          vpt[5] += e.clientY - lastPosY;
+          fbCanvas.requestRenderAll();
+        }
+        lastPosX = e.clientX;
+        lastPosY = e.clientY;
+      }
+    });
+
+    fbCanvas.on('mouse:up', function(opt) {
+      if (isDragging) {
+        if (fbCanvas.viewportTransform) {
+          fbCanvas.setViewportTransform(fbCanvas.viewportTransform);
+        }
+        isDragging = false;
+        fbCanvas.selection = true;
+      }
+    });
+
     setCanvas(fbCanvas);
 
     // Cleanup
