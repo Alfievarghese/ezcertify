@@ -54,8 +54,12 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       renderOnAddRemove: false, // Performance optimization
     });
 
+    // Ensure we use the full backend URL for the image since we bypassed the Vercel proxy
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    const fullUrl = templateData.url.startsWith('http') ? templateData.url : `${baseUrl}${templateData.url}`;
+
     // Load background image
-    fabric.Image.fromURL(templateData.url).then((img) => {
+    fabric.Image.fromURL(fullUrl).then((img) => {
       img.scale(scale);
       img.set({
         originX: 'left',
