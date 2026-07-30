@@ -244,7 +244,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     // We need to calculate scale to get actual pixel coordinates
     // relative to the original template size, or better yet, percentages.
     
-    const objects = canvas.getObjects().filter(obj => 
+    const objects = canvas.getObjects().filter((obj: any) => 
       obj.customType === 'placeholder' || obj.customType === 'qr'
     );
     
