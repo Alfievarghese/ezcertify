@@ -19,7 +19,6 @@ export function useTemplateData() {
     try {
       const response = await api.post('/api/upload/template', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
           ...(sessionId ? { 'x-session-id': sessionId } : {}),
         },
         onUploadProgress: (progressEvent) => {
