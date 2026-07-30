@@ -21,5 +21,9 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2"
   }
 }
