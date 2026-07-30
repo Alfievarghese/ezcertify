@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base Resets ── */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #fafbfc;
+    color: #212529;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* ── Scrollbar ── */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #ced4da;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+  }
+}
+
+/* ── Custom Utilities ── */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .glass-dark {
+    background: rgba(33, 37, 41, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Canvas editor specific */
+  .canvas-container {
+    box-shadow: 0 4px 40px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Drag-drop chip animation */
+  .drag-chip {
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  }
+
+  .drag-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 110, 245, 0.15);
+  }
+
+  .drag-chip:active {
+    cursor: grabbing;
+    transform: scale(0.97);
+  }
+
+  /* Dropzone states */
+  .dropzone-active {
+    border-color: #4c6ef5;
+    background-color: rgba(76, 110, 245, 0.04);
+  }
+
+  .dropzone-reject {
+    border-color: #fa5252;
+    background-color: rgba(250, 82, 82, 0.04);
+  }
+
+  /* Verified checkmark animation */
+  .checkmark-path {
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: drawCheck 0.6s ease-out forwards;
+  }
+
+  @keyframes drawCheck {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Progress bar fill animation */
+  .progress-fill {
+    transition: width 0.3s ease-out;
+  }
+
+  /* Selection handles on canvas objects */
+  .selection-ring {
+    box-shadow: 0 0 0 2px rgba(76, 110, 245, 0.5);
+  }
+}
+
+/* ── Canvas override styles ── */
+.canvas-wrapper .upper-canvas {
+  cursor: default !important;
+}
+
+.canvas-wrapper .upper-canvas:active {
+  cursor: grabbing !important;
+}
