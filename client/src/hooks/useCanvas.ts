@@ -73,7 +73,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     // Event Listeners
     fbCanvas.on('selection:created', (e) => {
       if (e.selected && e.selected.length > 0) {
-        setSelectedId(e.selected[0].id || null);
+        setSelectedId((e.selected[0] as any).id || null);
       }
     });
 
@@ -83,7 +83,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     
     fbCanvas.on('selection:updated', (e) => {
       if (e.selected && e.selected.length > 0) {
-        setSelectedId(e.selected[0].id || null);
+        setSelectedId((e.selected[0] as any).id || null);
       }
     });
 
@@ -94,7 +94,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       zoom *= 0.999 ** delta;
       if (zoom > 10) zoom = 10;
       if (zoom < 0.1) zoom = 0.1;
-      fbCanvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+      fbCanvas.zoomToPoint(new fabric.Point(opt.e.offsetX, opt.e.offsetY), zoom);
       opt.e.preventDefault();
       opt.e.stopPropagation();
     });
@@ -159,19 +159,19 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       fontFamily: 'Inter',
       fontSize: 24,
       fill: '#000000',
-      originX: 'center', // Center anchored
+      originX: 'center',
       originY: 'center',
       textAlign: 'center',
-      id: `text_${Date.now()}`,
-      customType: 'placeholder',
-      boundColumn: column,
       transparentCorners: false,
       cornerColor: '#4c6ef5',
       cornerStyle: 'circle',
       borderColor: '#4c6ef5',
       cornerSize: 10,
       padding: 10,
-    });
+    } as any);
+    (text as any).id = `text_${Date.now()}`;
+    (text as any).customType = 'placeholder';
+    (text as any).boundColumn = column;
 
     canvas.add(text);
     canvas.setActiveObject(text);
@@ -193,16 +193,14 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       stroke: '#000000',
       strokeWidth: 2,
       strokeDashArray: [5, 5],
-      originX: 'center', // Center anchored
+      originX: 'center',
       originY: 'center',
-      id: `qr_${Date.now()}`,
-      customType: 'qr',
       transparentCorners: false,
       cornerColor: '#4c6ef5',
       cornerStyle: 'circle',
       borderColor: '#4c6ef5',
       cornerSize: 10,
-    });
+    } as any);
     
     // Add QR icon/text inside
     const text = new fabric.Text('QR CODE', {
@@ -223,16 +221,16 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         top: y,
         originX: 'center',
         originY: 'center',
-        id: `qr_${Date.now()}`,
-        customType: 'qr',
-        qrDarkColor: '#000000',
-        qrLightColor: '#ffffff',
         transparentCorners: false,
         cornerColor: '#4c6ef5',
         cornerStyle: 'circle',
         borderColor: '#4c6ef5',
         cornerSize: 10,
-    });
+    } as any);
+    (group as any).id = `qr_${Date.now()}`;
+    (group as any).customType = 'qr';
+    (group as any).qrDarkColor = '#000000';
+    (group as any).qrLightColor = '#ffffff';
 
     canvas.add(group);
     canvas.setActiveObject(group);

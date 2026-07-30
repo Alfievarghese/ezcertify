@@ -90,7 +90,7 @@ export async function renderCertificate(
  * Auto-shrinks font if text would overflow its box or the canvas edge.
  */
 async function renderTextPlaceholder(
-  ctx: CanvasRenderingContext2D | any,
+  ctx: any,
   placeholder: PlaceholderLayout,
   rowData: Record<string, string>,
   canvasWidth: number,
@@ -177,7 +177,7 @@ async function renderTextPlaceholder(
  * Center-anchored like text placeholders.
  */
 async function renderQRPlaceholder(
-  ctx: CanvasRenderingContext2D | any,
+  ctx: any,
   placeholder: PlaceholderLayout,
   certificateId: string,
   canvasWidth: number,
