@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../lib/api';
 import { motion } from 'framer-motion';
 import { Download, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useEditorContext } from '../context/EditorContext';
@@ -58,7 +58,7 @@ export default function GeneratePage() {
           ]
         };
 
-        const res = await axios.post('/api/generate', layoutPayload);
+        const res = await api.post('/api/generate', layoutPayload);
         const newJobId = res.data.jobId;
         setJobId(newJobId);
         setStatus('active');

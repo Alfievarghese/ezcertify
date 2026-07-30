@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { api } from '../lib/api';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, Calendar, FileText } from 'lucide-react';
 
@@ -21,7 +21,7 @@ export default function VerifyPage() {
   useEffect(() => {
     const verifyCert = async () => {
       try {
-        const res = await axios.get(`/api/verify/${certificateId}`);
+        const res = await api.get(`/api/verify/${certificateId}`);
         setVerified(res.data.verified);
         setDetails(res.data.certificate);
       } catch (err: any) {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import { api } from '../lib/api';
 import { useEditorContext } from '../context/EditorContext';
 
 export function useTemplateData() {
@@ -17,7 +17,7 @@ export function useTemplateData() {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('/api/upload/template', formData, {
+      const response = await api.post('/api/upload/template', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           ...(sessionId ? { 'x-session-id': sessionId } : {}),
