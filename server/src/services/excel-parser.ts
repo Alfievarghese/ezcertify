@@ -36,7 +36,14 @@ export async function parseExcelFile(filePath: string): Promise<ParsedExcel> {
  */
 async function parseXlsxFile(filePath: string): Promise<ParsedExcel> {
   const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(filePath);
+  try {
+    await workbook.xlsx.readFile(filePath);
+  } catch (error: any) {
+    if (error.message && error.message.includes('end of central directory')) {
+      throw new Error('Invalid or corrupted file format. Old .xls files are not supported. Please save your file as a standard .xlsx or .csv and try again.');
+    }
+    throw error;
+  }
   
   const worksheet = workbook.worksheets[0];
   if (!worksheet) {

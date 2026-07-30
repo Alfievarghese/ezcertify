@@ -60,7 +60,7 @@ export default function LandingPage() {
             <div className="flex-grow flex flex-col justify-center">
               <FileDropzone
                 onFileSelect={handleExcelSelect}
-                accept=".xlsx,.xls,.csv"
+                accept=".xlsx,.csv"
                 label="Select Excel or CSV file"
                 description="First row must contain column headers"
                 icon={<FileSpreadsheet className="w-8 h-8" />}

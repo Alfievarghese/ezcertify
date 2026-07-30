@@ -47,9 +47,9 @@ export async function uploadRoutes(fastify: FastifyInstance) {
     const originalName = data.filename;
     const ext = path.extname(originalName).toLowerCase();
     
-    if (!['.xlsx', '.xls', '.csv'].includes(ext)) {
+    if (!['.xlsx', '.csv'].includes(ext)) {
       return reply.status(400).send({
-        error: 'Invalid file type. Supported: .xlsx, .xls, .csv',
+        error: 'Invalid file type. Supported: .xlsx, .csv',
       });
     }
     
