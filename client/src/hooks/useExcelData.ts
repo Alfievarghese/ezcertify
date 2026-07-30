@@ -40,7 +40,11 @@ export function useExcelData() {
 
       return true;
     } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'Failed to upload Excel file');
+      const responseError = err.response?.data?.error;
+      const errorMessage = typeof responseError === 'object' && responseError !== null
+        ? (responseError.message || JSON.stringify(responseError))
+        : responseError;
+      setError(errorMessage || err.message || 'Failed to upload Excel file');
       return false;
     } finally {
       setIsUploading(false);

@@ -35,7 +35,11 @@ export function useTemplateData() {
 
       return true;
     } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'Failed to upload template file');
+      const responseError = err.response?.data?.error;
+      const errorMessage = typeof responseError === 'object' && responseError !== null
+        ? (responseError.message || JSON.stringify(responseError))
+        : responseError;
+      setError(errorMessage || err.message || 'Failed to upload template');
       return false;
     } finally {
       setIsUploading(false);
