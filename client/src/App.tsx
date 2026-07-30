@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 
 // Lazy-load heavy pages to keep initial bundle small
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/verify/:certificateId" element={<VerifyPage />} />
       </Routes>
+      <Analytics />
     </Suspense>
   );
 }
