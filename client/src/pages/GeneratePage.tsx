@@ -10,7 +10,7 @@ import { generateCertificatesClientSide } from '../lib/clientRenderer';
 
 export default function GeneratePage() {
   const navigate = useNavigate();
-  const { sessionId, excelData, templateData, qrBoundColumn } = useEditorContext();
+  const { sessionId, excelData, templateData, qrBoundColumn, placeholders } = useEditorContext();
   
   const [status, setStatus] = useState<'starting' | 'active' | 'completed' | 'failed'>('starting');
   const [progress, setProgress] = useState(0);
@@ -27,23 +27,26 @@ export default function GeneratePage() {
     const startGeneration = async () => {
       setStatus('starting');
       try {
-        const placeholders: any[] = [
-          {
-            id: 'test',
-            type: 'text' as const,
-            x: 50,
-            y: 50,
-            boundColumn: excelData.headers[0],
-            fontFamily: 'Inter',
-            fontSize: 32,
-            fontColor: '#000000',
-            textAlign: 'center' as const,
-          }
-        ];
-        
-        if (qrBoundColumn) {
-          placeholders.push({
-            id: 'qr_test',
+        // Use exact placeholders set by user on canvas, or fallback to sensible defaults
+        const actualPlaceholders = (placeholders && placeholders.length > 0)
+          ? placeholders
+          : [
+              {
+                id: 'text_1',
+                type: 'text' as const,
+                x: 50,
+                y: 50,
+                boundColumn: excelData.headers[0],
+                fontFamily: 'Inter',
+                fontSize: 32,
+                fontColor: '#000000',
+                textAlign: 'center' as const,
+              }
+            ];
+
+        if (qrBoundColumn && !actualPlaceholders.some((p: any) => p.type === 'qr')) {
+          actualPlaceholders.push({
+            id: 'qr_1',
             type: 'qr' as const,
             x: 50,
             y: 80,
@@ -64,7 +67,7 @@ export default function GeneratePage() {
              templateUrl: fullUrl,
              templateWidth: templateData.width,
              templateHeight: templateData.height,
-             placeholders,
+             placeholders: actualPlaceholders,
           },
           rows: excelData.rows || excelData.previewRows || [],
           outputFormat: 'png',

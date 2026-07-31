@@ -26,7 +26,7 @@ export interface Placeholder {
 
 export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, containerRef: React.RefObject<HTMLDivElement | null>) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const { templateData, excelData, setSelectedId, setActiveObjectProps, propertyUpdateSignal } = useEditorContext();
+  const { templateData, excelData, setSelectedId, setActiveObjectProps, propertyUpdateSignal, setPlaceholders } = useEditorContext();
   const bgImageRef = useRef<fabric.Image | null>(null);
 
   // Initialize Canvas
@@ -113,6 +113,16 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
 
     fbCanvas.on('selection:created', syncActiveObject);
     fbCanvas.on('selection:updated', syncActiveObject);
+
+    // Sync placeholders to context whenever canvas objects change
+    const syncPlaceholdersToContext = () => {
+      const layout = exportLayoutInternal(fbCanvas);
+      setPlaceholders(layout);
+    };
+
+    fbCanvas.on('object:added', syncPlaceholdersToContext);
+    fbCanvas.on('object:modified', syncPlaceholdersToContext);
+    fbCanvas.on('object:removed', syncPlaceholdersToContext);
 
     fbCanvas.on('selection:cleared', () => {
       setSelectedId(null);
@@ -306,10 +316,8 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   const addTextPlaceholder = (x: number, y: number, column: string) => {
     if (!canvas) return;
 
-    // Get preview text from first row
-    const previewText = excelData?.previewRows[0]?.[column] || `[${column}]`;
-
-    const text = new fabric.IText(previewText, {
+    // Use column tag name itself, not example value
+    const text = new fabric.IText(`{${column}}`, {
       left: x,
       top: y,
       fontFamily: 'Inter',
@@ -393,19 +401,15 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     canvas.renderAll();
   };
 
-  // Export layout JSON for the backend
-  const exportLayout = (): Placeholder[] => {
-    if (!canvas || !templateData) return [];
+  // Export layout JSON
+  const exportLayoutInternal = (targetCanvas: fabric.Canvas | null): Placeholder[] => {
+    if (!targetCanvas || !templateData) return [];
     
-    // We need to calculate scale to get actual pixel coordinates
-    // relative to the original template size, or better yet, percentages.
-    
-    const objects = canvas.getObjects().filter((obj: any) => 
+    const objects = targetCanvas.getObjects().filter((obj: any) => 
       obj.customType === 'placeholder' || obj.customType === 'qr'
     );
     
     return objects.map((obj: any) => {
-      // Calculate coordinates relative to the background image!
       const img = bgImageRef.current;
       if (!img) return null;
       
@@ -419,7 +423,6 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       const yPct = (relativeY / scaledImgHeight) * 100;
       
       if (obj.customType === 'qr') {
-          // Scale QR size relative to original template
           const scaleX = obj.scaleX || 1;
           const canvasScale = scaledImgWidth / templateData.width;
           const actualSize = (obj.width * scaleX) / canvasScale;
@@ -451,6 +454,10 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         angle: obj.angle || 0,
       };
     }).filter(Boolean) as Placeholder[];
+  };
+
+  const exportLayout = (): Placeholder[] => {
+    return exportLayoutInternal(canvas);
   };
 
   return {
