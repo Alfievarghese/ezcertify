@@ -5,7 +5,7 @@ import { useCanvas } from '../../hooks/useCanvas';
 export default function CanvasEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { addTextPlaceholder, addQRPlaceholder } = useCanvas(canvasRef, containerRef);
+  const { canvas, addTextPlaceholder, addQRPlaceholder } = useCanvas(canvasRef, containerRef);
   const [isDragOver, setIsDragOver] = useState(false);
 
   // Prevent native browser zooming (pinch-to-zoom on trackpads)
@@ -35,12 +35,12 @@ export default function CanvasEditor() {
     e.preventDefault();
     setIsDragOver(false);
 
-    if (!containerRef.current) return;
+    if (!canvas) return;
     
-    // Get drop coordinates relative to container
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    // Convert DOM coordinates to Fabric logical coordinates (handles zoom & pan)
+    const pointer = canvas.getPointer(e.nativeEvent);
+    const x = pointer.x;
+    const y = pointer.y;
 
     const columnType = e.dataTransfer.getData('type');
     const columnName = e.dataTransfer.getData('column');
@@ -81,14 +81,6 @@ export default function CanvasEditor() {
       <div className="absolute inset-0 w-full h-full focus:outline-none" id="canvas-wrapper">
         <canvas ref={canvasRef} className="w-full h-full focus:outline-none" />
       </div>
-      
-      {isDragOver && (
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10 bg-primary-500/10">
-           <div className="bg-primary-600 text-white px-6 py-3 rounded-full font-medium shadow-lg backdrop-blur-sm animate-scale-in">
-             Drop to add placeholder
-           </div>
-        </div>
-      )}
 
       {/* Navigation Hint */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 bg-surface-800 border border-surface-700 text-surface-200 text-[11px] font-medium tracking-wide rounded-full shadow-lg flex space-x-6 opacity-60 hover:opacity-100 transition-opacity z-10 select-none">
