@@ -79,7 +79,8 @@ export async function renderCertificate(
     }
   }
   
-  return canvas.toBuffer('image/png');
+  // @ts-ignore - compressionLevel exists in node-canvas
+  return canvas.toBuffer('image/png', { compressionLevel: 3, filters: 0 });
 }
 
 /**

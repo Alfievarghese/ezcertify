@@ -41,11 +41,8 @@ export async function generateRoutes(fastify: FastifyInstance) {
       return reply.status(400).send({ error: 'No template uploaded. Please upload a certificate template first.' });
     }
     
-    if (!placeholders || placeholders.length === 0) {
-      return reply.status(400).send({ error: 'No placeholders defined. Please add at least one text or QR placeholder.' });
-    }
-    
-    if (!qrBoundColumn) {
+    const hasQR = placeholders?.some(p => p.type === 'qr');
+    if (hasQR && !qrBoundColumn) {
       return reply.status(400).send({ error: 'No QR bound column specified. Please bind a column to the QR code.' });
     }
     

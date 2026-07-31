@@ -58,7 +58,7 @@ export async function processTemplate(
   }
   
   await pipeline
-    .png({ quality: 90 })
+    .png({ compressionLevel: 3, adaptiveFiltering: false })
     .toFile(outputPath);
   
   return {

@@ -13,8 +13,25 @@ export default function ColumnSidebar() {
     if (column) {
       e.dataTransfer.setData('column', column);
     }
-    // Set drag image/effect
     e.dataTransfer.effectAllowed = 'copy';
+
+    // Create opaque ghost drag image
+    const target = e.currentTarget as HTMLElement;
+    const clone = target.cloneNode(true) as HTMLElement;
+    clone.style.backgroundColor = '#222';
+    clone.style.color = 'white';
+    clone.style.border = '1px solid #4c6ef5';
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.opacity = '1';
+    clone.style.width = `${target.offsetWidth}px`;
+    document.body.appendChild(clone);
+    e.dataTransfer.setDragImage(clone, 20, 20);
+    
+    // Cleanup clone after drag starts
+    setTimeout(() => {
+       document.body.removeChild(clone);
+    }, 0);
   };
 
   return (

@@ -6,6 +6,7 @@ import { Download, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useEditorContext } from '../context/EditorContext';
 import { Button } from '../components/ui/Button';
 import { ProgressBar } from '../components/ui/ProgressBar';
+import Loader from '../components/ui/3d-box-loader-animation';
 
 export default function GeneratePage() {
   const navigate = useNavigate();
@@ -131,20 +132,21 @@ export default function GeneratePage() {
           </p>
         </div>
 
-        {status === 'starting' && (
-           <div className="flex justify-center p-8">
-             <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+        {(status === 'starting' || status === 'active') && (
+           <div className="flex flex-col items-center justify-center pt-4 pb-8 overflow-hidden">
+             <div className="transform scale-75 origin-center h-[240px] flex items-center justify-center">
+               <Loader />
+             </div>
+             {status === 'active' && (
+               <div className="w-full mt-4">
+                 <ProgressBar 
+                   progress={progress} 
+                   label={`Processing... (${current} of ${total})`} 
+                   status="active"
+                 />
+               </div>
+             )}
            </div>
-        )}
-
-        {status === 'active' && (
-          <div className="space-y-6">
-            <ProgressBar 
-              progress={progress} 
-              label={`Processing... (${current} of ${total})`} 
-              status="active"
-            />
-          </div>
         )}
 
         {status === 'completed' && (

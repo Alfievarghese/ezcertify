@@ -1,6 +1,15 @@
 import React from 'react';
 import { useEditorContext } from '../../context/EditorContext';
 import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline as UnderlineIcon, Type as TypeIcon } from 'lucide-react';
+import {
+  ColorPicker,
+  ColorPickerSelection,
+  ColorPickerHue,
+  ColorPickerAlpha,
+  ColorPickerOutput,
+  ColorPickerEyeDropper,
+  ColorPickerFormat
+} from '../ui/color-picker';
 
 export default function PropertyPanel() {
   const { 
@@ -124,6 +133,10 @@ export default function PropertyPanel() {
                 <option value="Merriweather">Merriweather</option>
                 <option value="Oswald">Oswald</option>
                 <option value="Raleway">Raleway</option>
+                <option value="Open Sans">Open Sans</option>
+                <option value="Lato">Lato</option>
+                <option value="Source Sans Pro">Source Sans Pro</option>
+                <option value="Fira Sans">Fira Sans</option>
               </select>
             </div>
 
@@ -140,22 +153,26 @@ export default function PropertyPanel() {
                 </div>
               </div>
               
-              <div>
+              <div className="col-span-2">
                 <label className="block text-xs font-semibold text-gray-400 mb-2">Fill Color</label>
-                <div className="flex items-center bg-[#222] border border-[#333] rounded-lg focus-within:border-blue-500 transition-colors overflow-hidden">
-                  <input 
-                    type="color" 
-                    className="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer ml-1" 
-                    value={activeObjectProps.fill || '#000000'}
-                    onChange={(e) => updateProp('fill', e.target.value)}
-                  />
-                  <input 
-                    type="text" 
-                    className="w-full p-2 text-sm outline-none bg-transparent text-gray-200 uppercase"
-                    value={activeObjectProps.fill || '#000000'}
-                    onChange={(e) => updateProp('fill', e.target.value)}
-                  />
-                </div>
+                <ColorPicker 
+                  value={activeObjectProps.fill || '#000000'} 
+                  onChange={(color: string) => updateProp('fill', color)}
+                  className="w-full rounded-md border border-[#333] bg-[#222] p-3 shadow-sm"
+                >
+                  <ColorPickerSelection className="mb-2" />
+                  <div className="flex items-center gap-3 mb-2">
+                    <ColorPickerEyeDropper className="bg-[#111] hover:bg-black border-[#333]" />
+                    <div className="w-full grid gap-2">
+                      <ColorPickerHue />
+                      <ColorPickerAlpha />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ColorPickerOutput className="bg-[#111] border-[#333]" />
+                    <ColorPickerFormat className="bg-[#111] border-[#333] flex-1" />
+                  </div>
+                </ColorPicker>
               </div>
             </div>
 

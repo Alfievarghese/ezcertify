@@ -48,7 +48,7 @@ export async function generateCertificates(
   const zipFileName = `certificates_${Date.now()}.zip`;
   const zipPath = path.join(config.generatedDir, zipFileName);
   const zipStream = createWriteStream(zipPath);
-  const archive = archiver('zip', { zlib: { level: 6 } });
+  const archive = archiver('zip', { zlib: { level: 0 } });
   
   archive.pipe(zipStream);
   

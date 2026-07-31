@@ -8,6 +8,8 @@ const EditorPage = lazy(() => import('./pages/EditorPage'));
 const GeneratePage = lazy(() => import('./pages/GeneratePage'));
 const VerifyPage = lazy(() => import('./pages/VerifyPage'));
 
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+
 function LoadingFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-50">
@@ -27,6 +29,7 @@ export default function App() {
         <Route path="/editor" element={<EditorPage />} />
         <Route path="/generate" element={<GeneratePage />} />
         <Route path="/verify/:certificateId" element={<VerifyPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Analytics />
     </Suspense>

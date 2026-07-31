@@ -6,14 +6,12 @@ import { Button } from '../components/ui/Button';
 import CanvasEditor from '../components/editor/CanvasEditor';
 import ColumnSidebar from '../components/editor/ColumnSidebar';
 import PropertyPanel from '../components/editor/PropertyPanel';
-import ValidationChecklist from '../components/editor/ValidationChecklist';
 import MappingPreview from '../components/editor/MappingPreview';
 
 export default function EditorPage() {
   const navigate = useNavigate();
   const { excelData, templateData, qrBoundColumn } = useEditorContext();
   const [showPreview, setShowPreview] = useState(false);
-  const [validationPassed, setValidationPassed] = useState(false);
 
   // Redirect if no data
   useEffect(() => {
@@ -36,10 +34,8 @@ export default function EditorPage() {
         </div>
         
         <div className="flex items-center space-x-4">
-          <ValidationChecklist onValidationChange={setValidationPassed} />
           <Button 
             variant="primary"
-            disabled={!validationPassed}
             onClick={() => setShowPreview(true)}
             rightIcon={<Play className="w-4 h-4" />}
           >
