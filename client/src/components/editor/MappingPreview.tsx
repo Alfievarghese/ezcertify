@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useEditorContext } from '../../context/EditorContext';
 import { Button } from '../ui/Button';
 import { X, Play } from 'lucide-react';
@@ -10,14 +10,19 @@ interface MappingPreviewProps {
 }
 
 export default function MappingPreview({ onClose, onConfirm }: MappingPreviewProps) {
-  const { excelData, qrBoundColumn } = useEditorContext();
-  const [isStarting, setIsStarting] = useState(false);
+  const { excelData, qrBoundColumn, placeholders } = useEditorContext();
 
   if (!excelData) return null;
 
-  // In a real app, we'd get the bound columns from the canvas placeholders.
-  // For the skeleton, we'll assume a few columns are mapped.
-  const mappedColumns = excelData.headers.slice(0, 3);
+  // Show ALL columns that have been placed on the canvas
+  const boundColumns = (placeholders || [])
+    .filter((p: any) => p.type === 'text' && p.boundColumn)
+    .map((p: any) => p.boundColumn);
+  
+  // Fallback: if no placeholders placed yet, show first 3 headers  
+  const mappedColumns = boundColumns.length > 0 
+    ? [...new Set(boundColumns)] as string[]
+    : excelData.headers.slice(0, 3);
   
   if (qrBoundColumn && !mappedColumns.includes(qrBoundColumn)) {
       mappedColumns.push(qrBoundColumn);
@@ -42,6 +47,19 @@ export default function MappingPreview({ onClose, onConfirm }: MappingPreviewPro
         </div>
 
         <div className="flex-1 overflow-auto p-6 bg-surface-50">
+          {/* Show which tags are placed on canvas */}
+          {(placeholders || []).length > 0 && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-xs font-semibold text-blue-700 mb-1">
+                {placeholders.filter((p: any) => p.type === 'text').length} text field(s) placed on canvas
+                {placeholders.some((p: any) => p.type === 'qr') && ' + QR Code'}
+              </p>
+              <p className="text-xs text-blue-600">
+                Bound columns: {boundColumns.join(', ') || 'None'}
+              </p>
+            </div>
+          )}
+
           <div className="bg-white rounded-xl border border-surface-200 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
@@ -64,7 +82,7 @@ export default function MappingPreview({ onClose, onConfirm }: MappingPreviewPro
                   {excelData.previewRows.slice(0, 5).map((row, idx) => (
                     <tr key={idx} className="hover:bg-surface-50/50">
                       <td className="px-6 py-4 font-medium text-surface-900 whitespace-nowrap">
-                        {idx + 2} {/* +2 because header is row 1, data starts row 2 */}
+                        {idx + 2}
                       </td>
                       {mappedColumns.map(col => (
                         <td key={col} className="px-6 py-4 text-surface-600">
@@ -89,20 +107,15 @@ export default function MappingPreview({ onClose, onConfirm }: MappingPreviewPro
         </div>
 
         <div className="px-6 py-4 border-t border-surface-200 bg-white flex justify-end space-x-3">
-          <Button variant="outline" onClick={onClose} disabled={isStarting}>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
           <Button 
             variant="primary" 
-            isLoading={isStarting}
-            disabled={isStarting}
-            onClick={() => {
-              setIsStarting(true);
-              onConfirm();
-            }}
-            rightIcon={!isStarting ? <Play className="w-4 h-4" /> : undefined}
+            onClick={onConfirm}
+            rightIcon={<Play className="w-4 h-4" />}
           >
-            {isStarting ? 'Starting...' : 'Start Generation'}
+            Start Generation
           </Button>
         </div>
       </motion.div>

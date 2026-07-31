@@ -14,7 +14,7 @@ export default function GeneratePage() {
   
   const [status, setStatus] = useState<'starting' | 'active' | 'completed' | 'failed'>('starting');
   const [progress, setProgress] = useState(0);
-  const [total, setTotal] = useState(excelData?.totalRows || 0);
+  const [total, setTotal] = useState(0);
   const [current, setCurrent] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,15 +24,24 @@ export default function GeneratePage() {
       return;
     }
 
+    // Rows to generate — prefer full rows, fallback to previewRows
+    const rows = excelData.rows || excelData.previewRows || [];
+    if (rows.length === 0) {
+      setStatus('failed');
+      setError('No data rows found. Please re-upload your Excel file.');
+      return;
+    }
+
+    setTotal(rows.length);
+
     const startGeneration = async () => {
-      setStatus('starting');
       try {
-        // Use exact placeholders set by user on canvas, or fallback to sensible defaults
+        // Use exact placeholders from canvas context, or sensible fallback
         const actualPlaceholders = (placeholders && placeholders.length > 0)
-          ? placeholders
+          ? [...placeholders]
           : [
               {
-                id: 'text_1',
+                id: 'text_fallback',
                 type: 'text' as const,
                 x: 50,
                 y: 50,
@@ -44,9 +53,10 @@ export default function GeneratePage() {
               }
             ];
 
+        // Append QR placeholder if bound but not already present
         if (qrBoundColumn && !actualPlaceholders.some((p: any) => p.type === 'qr')) {
           actualPlaceholders.push({
-            id: 'qr_1',
+            id: 'qr_fallback',
             type: 'qr' as const,
             x: 50,
             y: 80,
@@ -69,7 +79,7 @@ export default function GeneratePage() {
              templateHeight: templateData.height,
              placeholders: actualPlaceholders,
           },
-          rows: excelData.rows || excelData.previewRows || [],
+          rows,
           outputFormat: 'png',
           qrBoundColumn: qrBoundColumn || '',
           onProgress: (cur, tot) => {
@@ -79,7 +89,7 @@ export default function GeneratePage() {
           },
           onComplete: () => {
              setStatus('completed');
-             setCurrent(excelData.rows.length);
+             setCurrent(rows.length);
              setProgress(100);
           },
           onError: (err) => {
@@ -94,7 +104,7 @@ export default function GeneratePage() {
     };
 
     startGeneration();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-surface-50 flex items-center justify-center p-4">
