@@ -154,13 +154,14 @@ export async function generateCertificatesClientSide(options: ClientGenerationOp
           }
         }
         
-        // 4. Save to zip
-        const primaryValue = qrBoundColumn ? (row[qrBoundColumn] || 'Certificate') : 'Certificate';
+        // 4. Save to zip — file name prioritizes 'Name' column, then bound column, then first available column
+        const nameColumn = Object.keys(row).find(k => k.toLowerCase() === 'name' || k.toLowerCase().includes('name')) || qrBoundColumn || Object.keys(row)[0];
+        const primaryValue = (nameColumn && row[nameColumn]) ? row[nameColumn] : `Certificate_${i + 1}`;
         const safeName = primaryValue.replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
         const fileName = `${safeName}_${certificateId}.png`;
         
-        // Convert canvas to blob
-        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+        // Convert canvas to max quality PNG blob
+        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png', 1.0));
         if (blob) {
           zip.file(fileName, blob);
         }

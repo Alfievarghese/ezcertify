@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEditorContext } from '../../context/EditorContext';
 import { Button } from '../ui/Button';
 import { X, Play } from 'lucide-react';
@@ -11,6 +11,7 @@ interface MappingPreviewProps {
 
 export default function MappingPreview({ onClose, onConfirm }: MappingPreviewProps) {
   const { excelData, qrBoundColumn } = useEditorContext();
+  const [isStarting, setIsStarting] = useState(false);
 
   if (!excelData) return null;
 
@@ -88,15 +89,20 @@ export default function MappingPreview({ onClose, onConfirm }: MappingPreviewPro
         </div>
 
         <div className="px-6 py-4 border-t border-surface-200 bg-white flex justify-end space-x-3">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={isStarting}>
             Cancel
           </Button>
           <Button 
             variant="primary" 
-            onClick={onConfirm}
-            rightIcon={<Play className="w-4 h-4" />}
+            isLoading={isStarting}
+            disabled={isStarting}
+            onClick={() => {
+              setIsStarting(true);
+              onConfirm();
+            }}
+            rightIcon={!isStarting ? <Play className="w-4 h-4" /> : undefined}
           >
-            Start Generation
+            {isStarting ? 'Starting...' : 'Start Generation'}
           </Button>
         </div>
       </motion.div>
