@@ -82,14 +82,30 @@ export default function PropertyPanel() {
                  value={qrBoundColumn || ''}
                  onChange={(e) => setQrBoundColumn(e.target.value)}
                >
-                 <option value="" disabled>Select Excel Column</option>
+                 <option value="" className="text-gray-400 italic">None (Use Static Content)</option>
                  {excelData?.headers.map(h => (
                    <option key={h} value={h}>{h}</option>
                  ))}
                </select>
-               <p className="text-[11px] text-gray-500 mt-2">
-                 Value shown on verification page when scanned.
-               </p>
+               {qrBoundColumn ? (
+                 <p className="text-[11px] text-gray-500 mt-2">
+                   Value bound from Excel column for each certificate.
+                 </p>
+               ) : (
+                 <div className="mt-4">
+                   <label className="block text-xs font-semibold text-gray-400 mb-2">Static QR Data</label>
+                   <input
+                     type="text"
+                     className="w-full p-2 text-sm bg-[#222] border border-[#333] rounded-lg text-gray-200 outline-none focus:border-blue-500 transition-colors"
+                     placeholder="e.g. https://example.com"
+                     value={activeObjectProps.staticValue || ''}
+                     onChange={(e) => updateProp('staticValue', e.target.value)}
+                   />
+                   <p className="text-[11px] text-gray-500 mt-2">
+                     Same data used for all generated QR codes.
+                   </p>
+                 </div>
+               )}
              </div>
              
              <div className="grid grid-cols-2 gap-4">

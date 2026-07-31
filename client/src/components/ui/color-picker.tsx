@@ -305,12 +305,12 @@ export const ColorPickerOutput = ({
 
   return (
     <Select value={mode} onValueChange={setMode}>
-      <SelectTrigger className="h-8 w-[4.5rem] shrink-0 text-xs bg-secondary" {...props}>
+      <SelectTrigger className="h-8 w-[4.5rem] shrink-0 text-xs bg-transparent border-[#333] text-gray-200" {...props}>
         <SelectValue placeholder="Mode" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-[#222] border-[#333] text-gray-200">
         {formats.map((format) => (
-          <SelectItem key={format} value={format} className="text-xs">
+          <SelectItem key={format} value={format} className="text-xs focus:bg-[#333] focus:text-white cursor-pointer">
             {format.toUpperCase()}
           </SelectItem>
         ))}
@@ -328,7 +328,7 @@ const PercentageInput = ({ className, ...props }: PercentageInputProps) => {
         type="text"
         {...props}
         className={cn(
-          'h-8 w-[3.25rem] rounded-l-none bg-secondary px-2 text-xs shadow-none border-l-0',
+          'h-8 w-[3.25rem] rounded-l-none bg-transparent border-[#333] text-gray-200 px-2 text-xs shadow-none border-l-0',
           className
         )}
       />
@@ -389,7 +389,7 @@ export const ColorPickerFormat = ({
           type="text"
           value={hex}
           onChange={handleChange}
-          className="h-8 rounded-r-none bg-secondary pl-6 px-2 text-xs shadow-none w-full"
+          className="h-8 rounded-r-none bg-transparent border-[#333] text-gray-200 pl-6 px-2 text-xs shadow-none w-full"
         />
         <PercentageInput value={alpha} readOnly />
       </div>
@@ -414,7 +414,7 @@ export const ColorPickerFormat = ({
             value={value}
             readOnly
             className={cn(
-              'h-8 rounded-r-none bg-secondary px-2 text-xs shadow-none min-w-0 flex-1',
+              'h-8 rounded-r-none bg-transparent border-[#333] text-gray-200 px-2 text-xs shadow-none min-w-0 flex-1',
               index && 'rounded-l-none',
               className
             )}
@@ -435,7 +435,7 @@ export const ColorPickerFormat = ({
       <div className={cn('w-full shadow-sm', className)} {...props}>
         <Input
           type="text"
-          className="h-8 w-full bg-secondary px-2 text-xs shadow-none"
+          className="h-8 w-full bg-transparent border-[#333] text-gray-200 px-2 text-xs shadow-none"
           value={`rgba(${rgb.join(', ')}, ${alpha}%)`}
           readOnly
           {...props}
@@ -462,7 +462,7 @@ export const ColorPickerFormat = ({
             value={value}
             readOnly
             className={cn(
-              'h-8 rounded-r-none bg-secondary px-2 text-xs shadow-none min-w-0 flex-1',
+              'h-8 rounded-r-none bg-transparent border-[#333] text-gray-200 px-2 text-xs shadow-none min-w-0 flex-1',
               index && 'rounded-l-none',
               className
             )}

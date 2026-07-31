@@ -26,6 +26,7 @@ export interface ActiveObjectProps {
   fontStyle?: string;
   underline?: boolean;
   boundColumn?: string;
+  staticValue?: string;
   angle?: number;
 }
 

@@ -435,6 +435,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
               qrSize: actualSize,
               qrDarkColor: obj.qrDarkColor || '#000000',
               qrLightColor: obj.qrLightColor || '#ffffff',
+              staticValue: obj.staticValue,
           };
       }
       

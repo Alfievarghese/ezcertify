@@ -127,8 +127,14 @@ export async function generateCertificatesClientSide(options: ClientGenerationOp
             const darkColor = placeholder.qrDarkColor || '#000000';
             const lightColor = placeholder.qrLightColor || '#ffffff';
             
+            // Determine QR data:
+            // 1. Bound column value for this row
+            // 2. Static value set in properties
+            // 3. Fallback to unique certificateId (default verification behavior)
+            const qrDataToEncode = (qrBoundColumn ? row[qrBoundColumn] : placeholder.staticValue) || certificateId;
+            
             try {
-              const qrDataUrl = await QRCode.toDataURL(certificateId, {
+              const qrDataUrl = await QRCode.toDataURL(qrDataToEncode, {
                 width: qrSize,
                 color: { dark: darkColor, light: lightColor },
                 margin: 0
