@@ -152,13 +152,22 @@ export default function GeneratePage() {
               <p className="text-surface-500 mt-1">All {total} certificates are ready for download.</p>
             </div>
 
-            <Button 
-              size="lg" 
-              className="w-full" 
-              onClick={() => navigate('/')}
-            >
-              Start New Batch
-            </Button>
+            <div className="flex flex-col space-y-3">
+              <Button 
+                size="lg" 
+                className="w-full" 
+                onClick={() => navigate('/')}
+              >
+                Start New Batch
+              </Button>
+              <Button 
+                variant="outline"
+                className="w-full" 
+                onClick={() => navigate('/editor')}
+              >
+                Back to Editor
+              </Button>
+            </div>
           </motion.div>
         )}
 

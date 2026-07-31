@@ -145,11 +145,11 @@ export async function generateCertificatesClientSide(options: ClientGenerationOp
           }
         }
         
-        // 4. Save to ZIP
+        // 4. Save to ZIP — clean file names: Name_RowNumber.png
         const nameColumn = Object.keys(row).find(k => k.toLowerCase() === 'name' || k.toLowerCase().includes('name')) || qrBoundColumn || Object.keys(row)[0];
-        const primaryValue = (nameColumn && row[nameColumn]) ? row[nameColumn] : `Certificate_${i + 1}`;
+        const primaryValue = (nameColumn && row[nameColumn]) ? row[nameColumn] : `Certificate`;
         const safeName = primaryValue.replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
-        const fileName = `${safeName}_${certificateId}.png`;
+        const fileName = `${safeName}_${i + 1}.png`;
         
         // Fast canvas blob export
         const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));

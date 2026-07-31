@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useEditorContext } from '../../context/EditorContext';
 import { Button } from '../ui/Button';
 import { X, Play } from 'lucide-react';
@@ -11,6 +11,7 @@ interface MappingPreviewProps {
 
 export default function MappingPreview({ onClose, onConfirm }: MappingPreviewProps) {
   const { excelData, qrBoundColumn, placeholders } = useEditorContext();
+  const [isStarting, setIsStarting] = useState(false);
 
   if (!excelData) return null;
 
@@ -107,15 +108,27 @@ export default function MappingPreview({ onClose, onConfirm }: MappingPreviewPro
         </div>
 
         <div className="px-6 py-4 border-t border-surface-200 bg-white flex justify-end space-x-3">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={isStarting}>
             Cancel
           </Button>
           <Button 
             variant="primary" 
-            onClick={onConfirm}
-            rightIcon={<Play className="w-4 h-4" />}
+            disabled={isStarting}
+            onClick={() => {
+              setIsStarting(true);
+              setTimeout(() => onConfirm(), 100);
+            }}
+            rightIcon={isStarting ? undefined : <Play className="w-4 h-4" />}
           >
-            Start Generation
+            {isStarting ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Starting...
+              </span>
+            ) : 'Start Generation'}
           </Button>
         </div>
       </motion.div>
