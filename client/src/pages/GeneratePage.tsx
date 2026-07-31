@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEditorContext } from '../context/EditorContext';
+import { motion } from 'framer-motion';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import Loader from '../components/ui/3d-box-loader-animation';
