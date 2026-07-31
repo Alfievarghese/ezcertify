@@ -66,7 +66,7 @@ export default function GeneratePage() {
              templateHeight: templateData.height,
              placeholders,
           },
-          rows: excelData.rows,
+          rows: excelData.rows || excelData.previewRows || [],
           outputFormat: 'png',
           qrBoundColumn: qrBoundColumn || '',
           onProgress: (cur, tot) => {

@@ -173,7 +173,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     let lastPosY = 0;
     
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.code === 'Space' || e.key === 'Alt') && e.target !== document.body && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+      if ((e.code === 'Space' || e.key === 'Alt' || e.key === 'Control') && e.target !== document.body && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
          if (e.code === 'Space') isSpaceDown = true;
          if (canvasRef.current) canvasRef.current.style.cursor = 'grab';
          
@@ -185,7 +185,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     };
     
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === 'Space' || e.key === 'Alt') {
+      if (e.code === 'Space' || e.key === 'Alt' || e.key === 'Control') {
          if (e.code === 'Space') isSpaceDown = false;
          isDragging = false;
          if (canvasRef.current) canvasRef.current.style.cursor = 'default';
@@ -200,8 +200,8 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
 
     fbCanvas.on('mouse:down', function(opt) {
       const evt = opt.e as MouseEvent;
-      // Allow panning with Spacebar, Alt key, or middle mouse button
-      if (isSpaceDown || evt.altKey === true || evt.button === 1) {
+      // Allow panning with Spacebar, Alt key, Ctrl key, or middle mouse button
+      if (isSpaceDown || evt.altKey || evt.ctrlKey || evt.metaKey || evt.button === 1) {
         isDragging = true;
         fbCanvas.selection = false;
         lastPosX = evt.clientX;
