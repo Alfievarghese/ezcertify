@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
-import { motion } from 'framer-motion';
-import { Download, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useEditorContext } from '../context/EditorContext';
+import { Button } from '../components/ui/Button';
+import { ProgressBar } from '../components/ui/ProgressBar';
+import Loader from '../components/ui/3d-box-loader-animation';
+import { generateCertificatesClientSide } from '../lib/clientRenderer';
 import { Button } from '../components/ui/Button';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import Loader from '../components/ui/3d-box-loader-animation';
@@ -17,9 +18,6 @@ export default function GeneratePage() {
   const [total, setTotal] = useState(excelData?.totalRows || 0);
   const [current, setCurrent] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [jobId, setJobId] = useState<string | null>(null);
-  
-  const eventSourceRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
     if (!sessionId || !excelData || !templateData || !qrBoundColumn) {
@@ -28,94 +26,81 @@ export default function GeneratePage() {
     }
 
     const startGeneration = async () => {
+      setStatus('starting');
       try {
-        // In a real app, you'd get the placeholders from the canvas context
-        // For this skeleton, we'll assume a dummy placeholder
-        const layoutPayload = {
-          sessionId,
-          qrBoundColumn,
-          outputFormat: 'pdf',
-          placeholders: [
-             {
-               id: 'test',
-               type: 'text',
-               x: 50,
-               y: 50,
-               boundColumn: excelData.headers[0],
-               fontFamily: 'Inter',
-               fontSize: 32,
-               fontColor: '#000000',
-               textAlign: 'center'
-             },
-             {
-               id: 'qr_test',
-               type: 'qr',
-               x: 50,
-               y: 80,
-               qrSize: 120,
-               qrDarkColor: '#000000',
-               qrLightColor: '#ffffff'
-             }
-          ]
-        };
-
-        const res = await api.post('/api/generate', layoutPayload);
-        const newJobId = res.data.jobId;
-        setJobId(newJobId);
+        // Build layout from the current canvas state using the context's layout
+        // In a full implementation, you'd serialize the actual canvas.
+        // For now, we simulate the layout from EditorContext.
+        const placeholders = [
+          {
+            id: 'test',
+            type: 'text' as 'text',
+            x: 50,
+            y: 50,
+            boundColumn: excelData.headers[0],
+            fontFamily: 'Inter',
+            fontSize: 32,
+            fontColor: '#000000',
+            textAlign: 'center' as 'center'
+          }
+        ];
+        
+        if (qrBoundColumn) {
+          placeholders.push({
+            id: 'qr_test',
+            type: 'qr' as 'qr',
+            x: 50,
+            y: 80,
+            boundColumn: qrBoundColumn,
+            qrSize: 120,
+            qrDarkColor: '#000000',
+            qrLightColor: '#ffffff'
+          });
+        }
+        
+        // baseUrl handling
+        const baseUrl = import.meta.env.VITE_API_URL || '';
+        const fullUrl = templateData.url.startsWith('http') ? templateData.url : `${baseUrl}${templateData.url}`;
+        
         setStatus('active');
         
-        // Setup SSE for progress
-        const sseUrl = `/api/generate/${newJobId}/status`;
-        const es = new EventSource(sseUrl);
-        eventSourceRef.current = es;
-
-        es.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          
-          if (data.status === 'completed') {
-            setStatus('completed');
-            setCurrent(data.total);
-            setProgress(100);
-            es.close();
-          } else if (data.status === 'failed') {
-            setStatus('failed');
-            setError(data.error || 'Generation failed');
-            es.close();
-          } else {
-            setCurrent(data.current || 0);
-            setTotal(data.total || 0);
-            setProgress(data.total ? Math.round((data.current / data.total) * 100) : 0);
-          }
-        };
-
-        es.onerror = () => {
-          // Ignore connection resets if we're done
-          if (status !== 'completed' && status !== 'failed') {
-             setError('Lost connection to server while monitoring progress.');
+        await generateCertificatesClientSide({
+          layout: {
+             templateUrl: fullUrl,
+             templateWidth: templateData.width,
+             templateHeight: templateData.height,
+             placeholders
+          },
+          rows: excelData.rows,
+          outputFormat: 'png',
+          qrBoundColumn: qrBoundColumn || '',
+          onProgress: (cur, tot) => {
+             setCurrent(cur);
+             setTotal(tot);
+             setProgress(Math.round((cur / tot) * 100));
+          },
+          onComplete: () => {
+             setStatus('completed');
+             setCurrent(excelData.rows.length);
+             setProgress(100);
+          },
+          onError: (err) => {
              setStatus('failed');
-             es.close();
+             setError(err);
           }
-        };
-
+        });
       } catch (err: any) {
         setStatus('failed');
-        setError(err.response?.data?.error || err.message || 'Failed to start generation');
+        setError(err.message || 'Failed to start client generation');
       }
     };
 
     startGeneration();
-
-    return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
-    };
   }, []);
 
   const handleDownload = () => {
-    if (jobId) {
-      window.location.href = `/api/generate/${jobId}/download`;
-    }
+    // Client side generation auto-downloads via FileSaver
+    // We can just keep it here as a fallback or remove it.
   };
 
   return (
@@ -166,15 +151,6 @@ export default function GeneratePage() {
 
             <Button 
               size="lg" 
-              className="w-full" 
-              onClick={handleDownload}
-              leftIcon={<Download className="w-5 h-5" />}
-            >
-              Download ZIP Archive
-            </Button>
-            
-            <Button 
-              variant="ghost" 
               className="w-full" 
               onClick={() => navigate('/')}
             >
