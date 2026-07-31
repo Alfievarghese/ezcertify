@@ -10,6 +10,7 @@ import { config } from './config.js';
 import { uploadRoutes } from './routes/upload.js';
 import { generateRoutes } from './routes/generate.js';
 import { verifyRoutes } from './routes/verify.js';
+import { verificationBatchRoutes } from './routes/verifications.js';
 import { createGenerationWorker } from './queue/worker.js';
 import { runCleanup } from './jobs/cleanup.js';
 
@@ -65,6 +66,7 @@ async function start() {
   await fastify.register(uploadRoutes);
   await fastify.register(generateRoutes);
   await fastify.register(verifyRoutes);
+  await fastify.register(verificationBatchRoutes);
   
   // Health check
   fastify.get('/api/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));

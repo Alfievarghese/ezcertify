@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import { useEditorContext } from '../context/EditorContext';
+import { loadFont } from '../lib/fonts';
 
 export interface Placeholder {
   id: string;
@@ -284,10 +285,64 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       [propertyUpdateSignal.key]: propertyUpdateSignal.value
     }));
     
-    canvas.requestRenderAll();
+    if (propertyUpdateSignal.key === 'fontFamily') {
+      loadFont(val).then(() => {
+        canvas.requestRenderAll();
+      });
+    } else {
+      canvas.requestRenderAll();
+    }
   }, [propertyUpdateSignal, canvas, setActiveObjectProps]);
 
-  // Keyboard shortcuts (Delete)
+  // Expose canvas actions
+  const deleteActiveObject = () => {
+    if (!canvas) return;
+    const activeObjects = canvas.getActiveObjects();
+    if (activeObjects.length > 0) {
+      activeObjects.forEach(obj => canvas.remove(obj));
+      canvas.discardActiveObject();
+      canvas.requestRenderAll();
+      setSelectedId(null);
+      setActiveObjectProps(null);
+    }
+  };
+  
+  const bringForward = () => {
+    if (!canvas) return;
+    const activeObject = canvas.getActiveObject();
+    if (activeObject) {
+      canvas.bringForward(activeObject);
+      canvas.requestRenderAll();
+    }
+  };
+  
+  const sendBackward = () => {
+    if (!canvas) return;
+    const activeObject = canvas.getActiveObject();
+    // Don't send behind the background image (which should be at index 0)
+    if (activeObject) {
+      const idx = canvas.getObjects().indexOf(activeObject);
+      if (idx > 1) { // 0 is background
+        canvas.sendBackwards(activeObject);
+        canvas.requestRenderAll();
+      }
+    }
+  };
+  
+  const clearAllPlaceholders = () => {
+    if (!canvas) return;
+    const objects = canvas.getObjects();
+    // Remove all except background (index 0)
+    for (let i = objects.length - 1; i > 0; i--) {
+      canvas.remove(objects[i]);
+    }
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+    setSelectedId(null);
+    setActiveObjectProps(null);
+  };
+
+  // Keyboard and Custom Events
   useEffect(() => {
     if (!canvas) return;
     
@@ -297,20 +352,29 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       }
       
       if (e.key === 'Backspace' || e.key === 'Delete') {
-        const activeObjects = canvas.getActiveObjects();
-        if (activeObjects.length > 0) {
-          activeObjects.forEach(obj => canvas.remove(obj));
-          canvas.discardActiveObject();
-          canvas.requestRenderAll();
-          setSelectedId(null);
-          setActiveObjectProps(null);
-        }
+        deleteActiveObject();
       }
     };
     
+    const handleCustomEventDelete = () => deleteActiveObject();
+    const handleCustomEventForward = () => bringForward();
+    const handleCustomEventBackward = () => sendBackward();
+    const handleCustomEventClear = () => clearAllPlaceholders();
+    
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canvas, setSelectedId, setActiveObjectProps]);
+    window.addEventListener('canvas:delete', handleCustomEventDelete);
+    window.addEventListener('canvas:forward', handleCustomEventForward);
+    window.addEventListener('canvas:backward', handleCustomEventBackward);
+    window.addEventListener('canvas:clear', handleCustomEventClear);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('canvas:delete', handleCustomEventDelete);
+      window.removeEventListener('canvas:forward', handleCustomEventForward);
+      window.removeEventListener('canvas:backward', handleCustomEventBackward);
+      window.removeEventListener('canvas:clear', handleCustomEventClear);
+    };
+  }, [canvas, deleteActiveObject, bringForward, sendBackward, clearAllPlaceholders]);
 
   // Add a text placeholder for a column
   const addTextPlaceholder = (x: number, y: number, column: string) => {
@@ -466,5 +530,9 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     addTextPlaceholder,
     addQRPlaceholder,
     exportLayout,
+    deleteActiveObject,
+    bringForward,
+    sendBackward,
+    clearAllPlaceholders,
   };
 }

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { useEditorContext } from '../../context/EditorContext';
-import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline as UnderlineIcon, Type as TypeIcon } from 'lucide-react';
+import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline as UnderlineIcon, Type as TypeIcon, Upload, Trash2, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
 import {
   ColorPicker,
   ColorPickerSelection,
@@ -21,6 +21,9 @@ export default function PropertyPanel() {
     setPropertyUpdateSignal
   } = useEditorContext();
 
+  const [customFonts, setCustomFonts] = useState<string[]>([]);
+  const fontInputRef = useRef<HTMLInputElement>(null);
+
   const isQR = selectedId?.startsWith('qr_');
   const isText = selectedId?.startsWith('text_');
 
@@ -30,18 +33,48 @@ export default function PropertyPanel() {
     }
   };
 
+  const handleCustomFontUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const fontName = file.name.split('.')[0].replace(/[^a-zA-Z0-9]/g, '');
+      const fontFace = new FontFace(fontName, arrayBuffer);
+      await fontFace.load();
+      document.fonts.add(fontFace);
+      
+      setCustomFonts(prev => [...prev, fontName]);
+      updateProp('fontFamily', fontName);
+      
+      if (fontInputRef.current) fontInputRef.current.value = '';
+    } catch (err) {
+      console.error("Failed to load custom font", err);
+      alert("Failed to load the font file.");
+    }
+  };
+
   if (!selectedId || !activeObjectProps) {
     return (
       <div className="flex flex-col h-full bg-transparent">
-        <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-            Properties
-          </h2>
+        <div className="p-4 border-b border-[#2a2a2a] shrink-0 bg-[#1a1a1a]">
+          <div className="flex items-center space-x-2 text-gray-200">
+            <Settings2 className="w-4 h-4" />
+            <h2 className="text-sm font-semibold tracking-wide">Properties</h2>
+          </div>
         </div>
-        <div className="flex-1 flex items-center justify-center p-6 text-center">
-          <p className="text-sm text-gray-500">
-            Select an element on the canvas to edit its properties.
-          </p>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500">
+          <div className="w-12 h-12 rounded-full bg-[#222] flex items-center justify-center mb-4">
+            <TypeIcon className="w-5 h-5 text-gray-400" />
+          </div>
+          <p className="text-sm mb-6">Select an element on the canvas to edit its properties.</p>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('canvas:clear'))}
+            className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-xs text-red-400 transition-colors flex items-center justify-center"
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+            Clear Canvas
+          </button>
         </div>
       </div>
     );
@@ -153,7 +186,27 @@ export default function PropertyPanel() {
                 <option value="Lato">Lato</option>
                 <option value="Source Sans Pro">Source Sans Pro</option>
                 <option value="Fira Sans">Fira Sans</option>
+                {customFonts.map(font => (
+                  <option key={font} value={font}>{font} (Custom)</option>
+                ))}
               </select>
+              <div className="mt-2 flex items-center justify-between">
+                <p className="text-[10px] text-gray-500">Need a specific font?</p>
+                <button 
+                  onClick={() => fontInputRef.current?.click()}
+                  className="flex items-center text-[10px] text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  <Upload className="w-3 h-3 mr-1" />
+                  Upload Font File
+                </button>
+                <input 
+                  type="file" 
+                  ref={fontInputRef} 
+                  onChange={handleCustomFontUpload} 
+                  accept=".ttf,.otf,.woff,.woff2" 
+                  className="hidden" 
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -250,6 +303,34 @@ export default function PropertyPanel() {
             </div>
           </div>
         )}
+        
+        {/* Actions */}
+        <div className="mt-8 pt-6 border-t border-[#2a2a2a] space-y-3">
+          <label className="block text-xs font-semibold text-gray-400 mb-2">Layer Actions</label>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('canvas:forward'))}
+              className="flex-1 py-2 bg-[#222] hover:bg-[#333] border border-[#333] rounded-lg text-xs text-gray-300 transition-colors flex items-center justify-center"
+            >
+              <ArrowUpToLine className="w-3.5 h-3.5 mr-1.5" />
+              Bring Forward
+            </button>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('canvas:backward'))}
+              className="flex-1 py-2 bg-[#222] hover:bg-[#333] border border-[#333] rounded-lg text-xs text-gray-300 transition-colors flex items-center justify-center"
+            >
+              <ArrowDownToLine className="w-3.5 h-3.5 mr-1.5" />
+              Send Backward
+            </button>
+          </div>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('canvas:delete'))}
+            className="w-full py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-xs text-red-400 transition-colors flex items-center justify-center"
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+            Delete Element
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import QRCode from 'qrcode';
+import { loadFont } from './fonts';
 
 export interface PlaceholderLayout {
   id: string;
@@ -75,8 +76,22 @@ export async function generateCertificatesClientSide(options: ClientGenerationOp
     const zip = new JSZip();
     const CHUNK_SIZE = 25; // Process 25 rows per frame for maximum speed while keeping UI responsive
     let currentIndex = 0;
+    const verificationRecords: any[] = [];
     
     // Pre-cache fonts and text baseline
+    ctx.textBaseline = 'middle';
+    
+    // Ensure all required fonts are loaded before generating images
+    const fontsToLoad = new Set<string>();
+    for (const p of layout.placeholders) {
+      if (p.type === 'text' && p.fontFamily) {
+        fontsToLoad.add(p.fontFamily);
+      }
+    }
+    
+    for (const font of fontsToLoad) {
+      await loadFont(font);
+    }
     ctx.textBaseline = 'middle';
     
     const processChunk = async () => {
@@ -157,6 +172,15 @@ export async function generateCertificatesClientSide(options: ClientGenerationOp
         const safeName = primaryValue.replace(/[^a-zA-Z0-9_\-\s]/g, '').trim().replace(/\s+/g, '_');
         const fileName = `${safeName}_${i + 1}.png`;
         
+        // 5. Save verification data
+        verificationRecords.push({
+          certificateId,
+          boundColumnName: qrBoundColumn || nameColumn || 'Data',
+          boundColumnValue: qrBoundColumn ? row[qrBoundColumn] : primaryValue,
+          templateName: layout.templateUrl.split('/').pop() || 'Unknown',
+          extraDisplayFields: row,
+        });
+        
         // Fast canvas blob export
         const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
         if (blob) {
@@ -170,6 +194,18 @@ export async function generateCertificatesClientSide(options: ClientGenerationOp
       if (currentIndex < rows.length) {
         setTimeout(processChunk, 0); // Micro-task delay: 10x faster than requestAnimationFrame
       } else {
+        try {
+          // Send verification records to backend before finishing
+          const baseUrl = import.meta.env.VITE_API_URL || '';
+          await fetch(`${baseUrl}/api/verifications/batch`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ records: verificationRecords })
+          });
+        } catch (error) {
+          console.error('Failed to save verification records:', error);
+        }
+
         // Fast ZIP compression level 1 (fastest zip stream generation)
         const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
         saveAs(zipBlob, `certificates_${Date.now()}.zip`);
