@@ -32,6 +32,7 @@ export function useExcelData() {
       setSessionId(response.data.sessionId);
       setExcelData({
         headers: response.data.headers,
+        rows: response.data.rows,
         previewRows: response.data.previewRows,
         totalRows: response.data.totalRows,
         warnings: response.data.warnings,

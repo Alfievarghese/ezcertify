@@ -77,9 +77,10 @@ export async function uploadRoutes(fastify: FastifyInstance) {
       return reply.send({
         sessionId,
         headers: parsed.headers,
+        rows: parsed.rows,                   // All rows for client-side generation
         previewRows: parsed.rows.slice(0, 5), // First 5 rows for preview
         totalRows: parsed.totalRows,
-        warnings: parsed.warnings.slice(0, 50), // Cap warnings to prevent huge payloads
+        warnings: parsed.warnings.slice(0, 50),
         totalWarnings: parsed.warnings.length,
       });
       

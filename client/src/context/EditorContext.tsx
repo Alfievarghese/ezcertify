@@ -3,7 +3,8 @@ import type { ValidationWarning } from '../../../server/src/services/excel-parse
 
 export interface ExcelData {
   headers: string[];
-  previewRows: Record<string, string>[];
+  rows: Record<string, string>[];       // ALL rows for client-side generation
+  previewRows: Record<string, string>[]; // First 5 rows for UI preview
   totalRows: number;
   warnings: ValidationWarning[];
 }

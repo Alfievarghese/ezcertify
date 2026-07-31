@@ -8,25 +8,22 @@ export default function CanvasEditor() {
   const { canvas, addTextPlaceholder, addQRPlaceholder } = useCanvas(canvasRef, containerRef);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  // Prevent native browser zooming (pinch-to-zoom on trackpads)
+  // Safari gesture zoom prevention (useCanvas handles wheel events)
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const preventDefault = (e: Event) => {
+    const preventGesture = (e: Event) => {
       e.preventDefault();
     };
 
-    container.addEventListener('wheel', preventDefault, { passive: false });
-    
-    // Also prevent Safari gesture events
-    container.addEventListener('gesturestart', preventDefault, { passive: false });
-    container.addEventListener('gesturechange', preventDefault, { passive: false });
+    // Only prevent Safari gestures — wheel is handled by useCanvas
+    container.addEventListener('gesturestart', preventGesture, { passive: false });
+    container.addEventListener('gesturechange', preventGesture, { passive: false });
 
     return () => {
-      container.removeEventListener('wheel', preventDefault);
-      container.removeEventListener('gesturestart', preventDefault);
-      container.removeEventListener('gesturechange', preventDefault);
+      container.removeEventListener('gesturestart', preventGesture);
+      container.removeEventListener('gesturechange', preventGesture);
     };
   }, []);
 

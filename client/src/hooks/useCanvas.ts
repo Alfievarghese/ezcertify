@@ -120,11 +120,14 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     });
 
     // Zoom and Pan Implementation (Figma Style)
+    // Disable drag-to-select on empty canvas area — only click on objects to select
+    fbCanvas.selection = false;
+    
     const handleWheel = (opt: any) => {
       const e = opt.e as WheelEvent;
-      // In Figma, Ctrl/Cmd + wheel is zoom. Normal wheel is pan.
+      
       if (e.ctrlKey || e.metaKey) {
-        // Zoom
+        // Zoom toward pointer
         const delta = e.deltaY;
         let zoom = fbCanvas.getZoom();
         zoom *= 0.999 ** delta;
@@ -135,7 +138,7 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         // Horizontal Pan
         const vpt = fbCanvas.viewportTransform;
         if (vpt) {
-          vpt[4] -= e.deltaY; // Scroll wheel maps to horizontal
+          vpt[4] -= e.deltaY;
           fbCanvas.requestRenderAll();
         }
       } else {
@@ -227,7 +230,6 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
           fbCanvas.setViewportTransform(fbCanvas.viewportTransform);
         }
         isDragging = false;
-        fbCanvas.selection = true;
         if (canvasRef.current && isSpaceDown) {
            canvasRef.current.style.cursor = 'grab';
         } else if (canvasRef.current) {

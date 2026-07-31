@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEditorContext } from '../context/EditorContext';
 import { motion } from 'framer-motion';
@@ -7,9 +7,6 @@ import { Button } from '../components/ui/Button';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import Loader from '../components/ui/3d-box-loader-animation';
 import { generateCertificatesClientSide } from '../lib/clientRenderer';
-import { Button } from '../components/ui/Button';
-import { ProgressBar } from '../components/ui/ProgressBar';
-import Loader from '../components/ui/3d-box-loader-animation';
 
 export default function GeneratePage() {
   const navigate = useNavigate();
@@ -22,7 +19,7 @@ export default function GeneratePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!sessionId || !excelData || !templateData || !qrBoundColumn) {
+    if (!sessionId || !excelData || !templateData) {
       navigate('/');
       return;
     }
@@ -30,37 +27,33 @@ export default function GeneratePage() {
     const startGeneration = async () => {
       setStatus('starting');
       try {
-        // Build layout from the current canvas state using the context's layout
-        // In a full implementation, you'd serialize the actual canvas.
-        // For now, we simulate the layout from EditorContext.
-        const placeholders = [
+        const placeholders: any[] = [
           {
             id: 'test',
-            type: 'text' as 'text',
+            type: 'text' as const,
             x: 50,
             y: 50,
             boundColumn: excelData.headers[0],
             fontFamily: 'Inter',
             fontSize: 32,
             fontColor: '#000000',
-            textAlign: 'center' as 'center'
+            textAlign: 'center' as const,
           }
         ];
         
         if (qrBoundColumn) {
           placeholders.push({
             id: 'qr_test',
-            type: 'qr' as 'qr',
+            type: 'qr' as const,
             x: 50,
             y: 80,
             boundColumn: qrBoundColumn,
             qrSize: 120,
             qrDarkColor: '#000000',
-            qrLightColor: '#ffffff'
+            qrLightColor: '#ffffff',
           });
         }
         
-        // baseUrl handling
         const baseUrl = import.meta.env.VITE_API_URL || '';
         const fullUrl = templateData.url.startsWith('http') ? templateData.url : `${baseUrl}${templateData.url}`;
         
@@ -71,7 +64,7 @@ export default function GeneratePage() {
              templateUrl: fullUrl,
              templateWidth: templateData.width,
              templateHeight: templateData.height,
-             placeholders
+             placeholders,
           },
           rows: excelData.rows,
           outputFormat: 'png',
@@ -89,7 +82,7 @@ export default function GeneratePage() {
           onError: (err) => {
              setStatus('failed');
              setError(err);
-          }
+          },
         });
       } catch (err: any) {
         setStatus('failed');
@@ -99,11 +92,6 @@ export default function GeneratePage() {
 
     startGeneration();
   }, []);
-
-  const handleDownload = () => {
-    // Client side generation auto-downloads via FileSaver
-    // We can just keep it here as a fallback or remove it.
-  };
 
   return (
     <div className="min-h-screen bg-surface-50 flex items-center justify-center p-4">
