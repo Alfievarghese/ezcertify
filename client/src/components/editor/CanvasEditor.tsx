@@ -8,6 +8,28 @@ export default function CanvasEditor() {
   const { addTextPlaceholder, addQRPlaceholder } = useCanvas(canvasRef, containerRef);
   const [isDragOver, setIsDragOver] = useState(false);
 
+  // Prevent native browser zooming (pinch-to-zoom on trackpads)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const preventDefault = (e: Event) => {
+      e.preventDefault();
+    };
+
+    container.addEventListener('wheel', preventDefault, { passive: false });
+    
+    // Also prevent Safari gesture events
+    container.addEventListener('gesturestart', preventDefault, { passive: false });
+    container.addEventListener('gesturechange', preventDefault, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', preventDefault);
+      container.removeEventListener('gesturestart', preventDefault);
+      container.removeEventListener('gesturechange', preventDefault);
+    };
+  }, []);
+
   // Handle drop from sidebar
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -51,13 +73,13 @@ export default function CanvasEditor() {
       onDragLeave={handleDragLeave}
     >
       {/* Fabric.js Canvas Wrapper */}
-      <div className="shadow-lg relative">
-        <canvas ref={canvasRef} />
+      <div className="absolute inset-0 w-full h-full" id="canvas-wrapper">
+        <canvas ref={canvasRef} className="w-full h-full" />
       </div>
       
       {isDragOver && (
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
-           <div className="bg-primary-500/80 text-white px-6 py-3 rounded-full font-medium shadow-lg backdrop-blur-sm animate-scale-in">
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10 bg-primary-500/10">
+           <div className="bg-primary-600 text-white px-6 py-3 rounded-full font-medium shadow-lg backdrop-blur-sm animate-scale-in">
              Drop to add placeholder
            </div>
         </div>

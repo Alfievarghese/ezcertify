@@ -56,8 +56,8 @@ export default function EditorPage() {
         </aside>
 
         {/* Center - Canvas Area */}
-        <main className="flex-1 flex flex-col relative bg-surface-50 overflow-auto items-center justify-center p-6">
-          <div className="canvas-container bg-white shadow-card transition-all relative">
+        <main className="flex-1 flex flex-col relative bg-surface-50 overflow-hidden">
+          <div className="canvas-container absolute inset-0 bg-[#e5e5f7] bg-[radial-gradient(#444cf7_0.5px,transparent_0.5px)] [background-size:16px_16px] opacity-100">
              <CanvasEditor />
           </div>
         </main>

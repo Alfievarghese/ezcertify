@@ -33,25 +33,23 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
   useEffect(() => {
     if (!canvasRef.current || !containerRef.current || !templateData) return;
 
-    // Calculate dimensions to fit container while maintaining aspect ratio
-    const containerWidth = containerRef.current.clientWidth - 48; // padding
-    const containerHeight = containerRef.current.clientHeight - 48;
+    // Make canvas fill the entire container
+    const containerWidth = containerRef.current.clientWidth;
+    const containerHeight = containerRef.current.clientHeight;
     
+    // Scale image to fit within 80% of the container
     const scale = Math.min(
-      containerWidth / templateData.width,
-      containerHeight / templateData.height
+      (containerWidth * 0.8) / templateData.width,
+      (containerHeight * 0.8) / templateData.height
     );
-    
-    const canvasWidth = templateData.width * scale;
-    const canvasHeight = templateData.height * scale;
 
-    // Initialize Fabric Canvas (v6 syntax)
+    // Initialize Fabric Canvas
     const fbCanvas = new fabric.Canvas(canvasRef.current, {
-      width: canvasWidth,
-      height: canvasHeight,
+      width: containerWidth,
+      height: containerHeight,
       selection: true,
       preserveObjectStacking: true,
-      renderOnAddRemove: false, // Performance optimization
+      renderOnAddRemove: false,
     });
 
     // Ensure we use the full backend URL for the image since we bypassed the Vercel proxy
@@ -61,9 +59,16 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     // Load background image
     fabric.Image.fromURL(fullUrl).then((img) => {
       img.scale(scale);
+      
+      // Center the image in the canvas
+      const imgWidth = templateData.width * scale;
+      const imgHeight = templateData.height * scale;
+      
       img.set({
         originX: 'left',
         originY: 'top',
+        left: (containerWidth - imgWidth) / 2,
+        top: (containerHeight - imgHeight) / 2,
         selectable: false,
         evented: false,
       });
@@ -253,16 +258,23 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
     );
     
     return objects.map((obj: any) => {
-      // Calculate center position as percentage of canvas
-      // This is resolution independent
-      const xPct = (obj.left / canvas.width!) * 100;
-      const yPct = (obj.top / canvas.height!) * 100;
+      // Calculate coordinates relative to the background image!
+      const img = bgImageRef.current;
+      if (!img) return null;
+      
+      const relativeX = obj.left - (img.left || 0);
+      const relativeY = obj.top - (img.top || 0);
+      
+      const scaledImgWidth = (img.width || 0) * (img.scaleX || 1);
+      const scaledImgHeight = (img.height || 0) * (img.scaleY || 1);
+      
+      const xPct = (relativeX / scaledImgWidth) * 100;
+      const yPct = (relativeY / scaledImgHeight) * 100;
       
       if (obj.customType === 'qr') {
           // Scale QR size relative to original template
           const scaleX = obj.scaleX || 1;
-          // approximate actual width on original template
-          const canvasScale = canvas.width! / templateData.width;
+          const canvasScale = scaledImgWidth / templateData.width;
           const actualSize = (obj.width * scaleX) / canvasScale;
           
           return {
@@ -283,13 +295,13 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         y: yPct,
         boundColumn: obj.boundColumn,
         fontFamily: obj.fontFamily,
-        fontSize: obj.fontSize, // Will need server-side scaling if needed
+        fontSize: obj.fontSize, 
         fontColor: obj.fill as string,
         fontWeight: obj.fontWeight as string,
         fontStyle: obj.fontStyle as string,
         textAlign: obj.textAlign as 'left' | 'center' | 'right',
       };
-    });
+    }).filter(Boolean) as Placeholder[];
   };
 
   return {
