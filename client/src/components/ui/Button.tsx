@@ -19,14 +19,14 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'inline-flex items-center justify-center font-bold transition-all focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-tighter rounded-none';
   
   const variants = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm',
-    secondary: 'bg-surface-100 text-surface-900 hover:bg-surface-200 focus:ring-surface-500',
-    outline: 'border-2 border-surface-200 bg-transparent text-surface-700 hover:bg-surface-50 hover:text-surface-900 hover:border-surface-300 focus:ring-surface-500',
-    danger: 'bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500 shadow-sm',
-    ghost: 'bg-transparent text-surface-600 hover:bg-surface-100 hover:text-surface-900 focus:ring-surface-500',
+    primary: 'bg-[#bbf7d0] text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
+    secondary: 'bg-white text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
+    outline: 'bg-transparent text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
+    danger: 'bg-[#fecaca] text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
+    ghost: 'bg-transparent text-black border-2 border-transparent hover:border-black hover:bg-gray-100 active:bg-gray-200',
   };
 
   const sizes = {

@@ -23,14 +23,14 @@ export default function PropertyPanel() {
 
   if (!selectedId || !activeObjectProps) {
     return (
-      <div className="flex flex-col h-full bg-surface-900 border-l border-surface-800 text-surface-200">
-        <div className="p-4 border-b border-surface-800">
-          <h2 className="text-xs font-semibold text-surface-400 uppercase tracking-wider">
+      <div className="flex flex-col h-full bg-white">
+        <div className="p-5 border-b-4 border-black bg-[#fef08a]">
+          <h2 className="text-sm font-black text-black uppercase tracking-tighter">
             Properties
           </h2>
         </div>
         <div className="flex-1 flex items-center justify-center p-6 text-center">
-          <p className="text-sm text-surface-500">
+          <p className="text-sm font-bold text-black border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             Select an element on the canvas to edit its properties.
           </p>
         </div>
@@ -39,10 +39,10 @@ export default function PropertyPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-surface-900 border-l border-surface-800 text-surface-200">
-      <div className="p-4 border-b border-surface-800">
-        <h2 className="text-xs font-semibold text-surface-400 uppercase tracking-wider">
-          {isQR ? 'QR Code Properties' : 'Text Properties'}
+    <div className="flex flex-col h-full bg-white">
+      <div className="p-5 border-b-4 border-black bg-[#fef08a]">
+        <h2 className="text-sm font-black text-black uppercase tracking-tighter">
+          {isQR ? 'QR Properties' : 'Text Properties'}
         </h2>
       </div>
 
@@ -50,13 +50,13 @@ export default function PropertyPanel() {
         
         {/* QR Specific Properties */}
         {isQR && (
-          <div className="space-y-4">
+          <div className="space-y-6">
              <div>
-               <label className="block text-xs font-medium text-surface-400 mb-1.5">
-                 Bind Verification To (Required)
+               <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">
+                 Bind Verification To
                </label>
                <select 
-                 className="w-full text-sm rounded border border-surface-700 bg-surface-800 p-2 text-surface-100 outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                 className="w-full text-sm font-bold border-2 border-black bg-white p-2 text-black outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:translate-y-[2px] focus:translate-x-[2px] transition-all cursor-pointer appearance-none rounded-none"
                  value={qrBoundColumn || ''}
                  onChange={(e) => setQrBoundColumn(e.target.value)}
                >
@@ -65,24 +65,24 @@ export default function PropertyPanel() {
                    <option key={h} value={h}>{h}</option>
                  ))}
                </select>
-               <p className="text-[11px] text-surface-500 mt-1.5">
-                 This value will be shown on the public verification page when scanned. Usually the recipient's Name or ID.
+               <p className="text-[11px] font-bold text-gray-600 mt-3 border-l-2 border-black pl-2">
+                 Value shown on verification page when scanned.
                </p>
              </div>
              
              <div className="grid grid-cols-2 gap-4">
                <div>
-                 <label className="block text-xs font-medium text-surface-400 mb-1.5">Dark Color</label>
+                 <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Dark Color</label>
                  <div className="flex items-center space-x-2">
-                   <div className="w-6 h-6 rounded border border-surface-700 bg-black cursor-pointer"></div>
-                   <span className="text-xs text-surface-400 font-mono">#000000</span>
+                   <div className="w-8 h-8 rounded-none border-2 border-black bg-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"></div>
+                   <span className="text-xs text-black font-bold font-mono">#000000</span>
                  </div>
                </div>
                <div>
-                 <label className="block text-xs font-medium text-surface-400 mb-1.5">Light Color</label>
+                 <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Light Color</label>
                  <div className="flex items-center space-x-2">
-                   <div className="w-6 h-6 rounded border border-surface-700 bg-white cursor-pointer"></div>
-                   <span className="text-xs text-surface-400 font-mono">#FFFFFF</span>
+                   <div className="w-8 h-8 rounded-none border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"></div>
+                   <span className="text-xs text-black font-bold font-mono">#FFFFFF</span>
                  </div>
                </div>
              </div>
@@ -93,9 +93,9 @@ export default function PropertyPanel() {
         {isText && (
           <div className="space-y-6">
             <div>
-              <label className="block text-xs font-medium text-surface-400 mb-1.5">Font Family</label>
+              <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Font Family</label>
               <select 
-                className="w-full text-sm rounded border border-surface-700 bg-surface-800 p-2 text-surface-100 outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full text-sm font-bold border-2 border-black bg-white p-2 text-black outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:translate-y-[2px] focus:translate-x-[2px] transition-all cursor-pointer appearance-none rounded-none"
                 value={activeObjectProps.fontFamily || 'Inter'}
                 onChange={(e) => updateProp('fontFamily', e.target.value)}
               >
@@ -110,11 +110,11 @@ export default function PropertyPanel() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-surface-400 mb-1.5">Font Size</label>
-                <div className="flex items-center border border-surface-700 bg-surface-800 rounded overflow-hidden focus-within:ring-1 focus-within:ring-primary-500 focus-within:border-primary-500">
+                <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Font Size</label>
+                <div className="flex items-center border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-within:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:translate-y-[2px] focus-within:translate-x-[2px] transition-all rounded-none">
                   <input 
                     type="number" 
-                    className="w-full p-2 text-sm outline-none bg-transparent text-surface-100" 
+                    className="w-full p-2 text-sm font-bold outline-none bg-transparent text-black" 
                     value={activeObjectProps.fontSize ? Math.round(activeObjectProps.fontSize) : 24}
                     onChange={(e) => updateProp('fontSize', parseInt(e.target.value) || 24)}
                   />
@@ -122,17 +122,17 @@ export default function PropertyPanel() {
               </div>
               
               <div>
-                <label className="block text-xs font-medium text-surface-400 mb-1.5">Fill Color</label>
-                <div className="flex items-center border border-surface-700 bg-surface-800 rounded overflow-hidden focus-within:ring-1 focus-within:ring-primary-500 focus-within:border-primary-500">
+                <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Fill Color</label>
+                <div className="flex items-center border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-within:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:translate-y-[2px] focus-within:translate-x-[2px] transition-all rounded-none">
                   <input 
                     type="color" 
-                    className="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer ml-1" 
+                    className="w-8 h-8 p-0 border-r-2 border-black bg-transparent cursor-pointer ml-1" 
                     value={activeObjectProps.fill || '#000000'}
                     onChange={(e) => updateProp('fill', e.target.value)}
                   />
                   <input 
                     type="text" 
-                    className="w-full p-2 text-sm outline-none bg-transparent text-surface-100 uppercase"
+                    className="w-full p-2 text-sm font-bold outline-none bg-transparent text-black uppercase"
                     value={activeObjectProps.fill || '#000000'}
                     onChange={(e) => updateProp('fill', e.target.value)}
                   />
@@ -141,53 +141,52 @@ export default function PropertyPanel() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-surface-400 mb-1.5">Alignment</label>
-              <div className="flex bg-surface-800 rounded p-1 border border-surface-700">
+              <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Alignment</label>
+              <div className="flex border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white divide-x-2 divide-black">
                 <button 
                   onClick={() => updateProp('textAlign', 'left')}
-                  className={`flex-1 flex justify-center py-1.5 rounded transition-colors ${activeObjectProps.textAlign === 'left' ? 'bg-surface-700 text-white shadow-sm' : 'text-surface-400 hover:text-surface-200 hover:bg-surface-700/50'}`}
+                  className={`flex-1 flex justify-center py-2 transition-colors ${activeObjectProps.textAlign === 'left' ? 'bg-[#bbf7d0] text-black shadow-inner' : 'text-black hover:bg-gray-100'}`}
                 >
-                  <AlignLeft className="w-4 h-4" />
+                  <AlignLeft className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={() => updateProp('textAlign', 'center')}
-                  className={`flex-1 flex justify-center py-1.5 rounded transition-colors ${activeObjectProps.textAlign === 'center' || !activeObjectProps.textAlign ? 'bg-surface-700 text-white shadow-sm' : 'text-surface-400 hover:text-surface-200 hover:bg-surface-700/50'}`}
+                  className={`flex-1 flex justify-center py-2 transition-colors ${activeObjectProps.textAlign === 'center' || !activeObjectProps.textAlign ? 'bg-[#bbf7d0] text-black shadow-inner' : 'text-black hover:bg-gray-100'}`}
                 >
-                  <AlignCenter className="w-4 h-4" />
+                  <AlignCenter className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={() => updateProp('textAlign', 'right')}
-                  className={`flex-1 flex justify-center py-1.5 rounded transition-colors ${activeObjectProps.textAlign === 'right' ? 'bg-surface-700 text-white shadow-sm' : 'text-surface-400 hover:text-surface-200 hover:bg-surface-700/50'}`}
+                  className={`flex-1 flex justify-center py-2 transition-colors ${activeObjectProps.textAlign === 'right' ? 'bg-[#bbf7d0] text-black shadow-inner' : 'text-black hover:bg-gray-100'}`}
                 >
-                  <AlignRight className="w-4 h-4" />
+                  <AlignRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
             
             <div>
-               <label className="block text-xs font-medium text-surface-400 mb-1.5">Style</label>
-               <div className="flex space-x-2">
+               <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Style</label>
+               <div className="flex space-x-3">
                   <button 
                     onClick={() => updateProp('fontWeight', activeObjectProps.fontWeight === 'bold' ? 'normal' : 'bold')}
-                    className={`p-2 rounded border transition-colors ${activeObjectProps.fontWeight === 'bold' ? 'bg-primary-500/20 border-primary-500/50 text-primary-400' : 'border-surface-700 bg-surface-800 text-surface-400 hover:text-surface-200'}`}
+                    className={`p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all rounded-none ${activeObjectProps.fontWeight === 'bold' ? 'bg-[#bbf7d0] text-black' : 'bg-white text-black'}`}
                   >
-                    <Bold className="w-4 h-4" />
+                    <Bold className="w-5 h-5" />
                   </button>
                   <button 
                     onClick={() => updateProp('fontStyle', activeObjectProps.fontStyle === 'italic' ? 'normal' : 'italic')}
-                    className={`p-2 rounded border transition-colors ${activeObjectProps.fontStyle === 'italic' ? 'bg-primary-500/20 border-primary-500/50 text-primary-400' : 'border-surface-700 bg-surface-800 text-surface-400 hover:text-surface-200'}`}
+                    className={`p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all rounded-none ${activeObjectProps.fontStyle === 'italic' ? 'bg-[#bbf7d0] text-black' : 'bg-white text-black'}`}
                   >
-                    <Italic className="w-4 h-4" />
+                    <Italic className="w-5 h-5" />
                   </button>
                </div>
             </div>
             
-            <div className="p-3 bg-surface-800/50 rounded border border-surface-800 mt-8">
+            <div className="p-4 bg-[#fef08a] border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-8">
               <div className="flex items-start">
-                <TypeIcon className="w-4 h-4 text-surface-500 mt-0.5 mr-2 shrink-0" />
-                <p className="text-[11px] text-surface-400 leading-relaxed">
-                  Text is center-anchored by default. It will expand evenly in both directions. 
-                  Long text will automatically shrink to fit bounds.
+                <TypeIcon className="w-5 h-5 text-black mt-0.5 mr-3 shrink-0" />
+                <p className="text-xs font-bold text-black leading-relaxed">
+                  Text expands evenly from the center. Long text will automatically wrap or shrink to fit.
                 </p>
               </div>
             </div>

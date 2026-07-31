@@ -116,30 +116,63 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       setActiveObjectProps(null);
     });
 
-    // Zoom and Pan Implementation
+    // Zoom and Pan Implementation (Figma Style)
     fbCanvas.on('mouse:wheel', function(opt) {
-      const delta = opt.e.deltaY;
-      let zoom = fbCanvas.getZoom();
-      zoom *= 0.999 ** delta;
-      if (zoom > 10) zoom = 10;
-      if (zoom < 0.1) zoom = 0.1;
-      fbCanvas.zoomToPoint(new fabric.Point(opt.e.offsetX, opt.e.offsetY), zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
+      const e = opt.e as WheelEvent;
+      // In Figma, Ctrl/Cmd + wheel is zoom. Normal wheel is pan.
+      if (e.ctrlKey || e.metaKey) {
+        // Zoom
+        const delta = e.deltaY;
+        let zoom = fbCanvas.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 10) zoom = 10;
+        if (zoom < 0.1) zoom = 0.1;
+        fbCanvas.zoomToPoint(new fabric.Point(e.offsetX, e.offsetY), zoom);
+      } else {
+        // Pan
+        const vpt = fbCanvas.viewportTransform;
+        if (vpt) {
+          vpt[4] -= e.deltaX;
+          vpt[5] -= e.deltaY;
+          fbCanvas.requestRenderAll();
+        }
+      }
+      e.preventDefault();
+      e.stopPropagation();
     });
 
     let isDragging = false;
+    let isSpaceDown = false;
     let lastPosX = 0;
     let lastPosY = 0;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && e.target !== document.body && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+         isSpaceDown = true;
+         if (canvasRef.current) canvasRef.current.style.cursor = 'grab';
+      }
+    };
+    
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+         isSpaceDown = false;
+         isDragging = false;
+         if (canvasRef.current) canvasRef.current.style.cursor = 'default';
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
     fbCanvas.on('mouse:down', function(opt) {
       const evt = opt.e as MouseEvent;
-      // Allow panning with Alt key or middle mouse button
-      if (evt.altKey === true || evt.button === 1) {
+      // Allow panning with Spacebar, Alt key, or middle mouse button
+      if (isSpaceDown || evt.altKey === true || evt.button === 1) {
         isDragging = true;
         fbCanvas.selection = false;
         lastPosX = evt.clientX;
         lastPosY = evt.clientY;
+        if (canvasRef.current) canvasRef.current.style.cursor = 'grabbing';
       }
     });
 
@@ -164,6 +197,11 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         }
         isDragging = false;
         fbCanvas.selection = true;
+        if (canvasRef.current && isSpaceDown) {
+           canvasRef.current.style.cursor = 'grab';
+        } else if (canvasRef.current) {
+           canvasRef.current.style.cursor = 'default';
+        }
       }
     });
 
@@ -171,6 +209,8 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
 
     // Cleanup
     return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
       fbCanvas.dispose();
     };
   }, [templateData]); // Only re-init if template changes
