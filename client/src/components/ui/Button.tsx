@@ -19,20 +19,20 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-bold transition-all focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-tighter rounded-none';
+  const baseStyles = 'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg';
   
   const variants = {
-    primary: 'bg-[#bbf7d0] text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
-    secondary: 'bg-white text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
-    outline: 'bg-transparent text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
-    danger: 'bg-[#fecaca] text-black border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1',
-    ghost: 'bg-transparent text-black border-2 border-transparent hover:border-black hover:bg-gray-100 active:bg-gray-200',
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm',
+    secondary: 'bg-[#2a2a2a] text-gray-200 hover:bg-[#333] border border-[#3a3a3a] shadow-sm',
+    outline: 'bg-transparent text-gray-300 border border-[#333] hover:border-gray-500 hover:text-white',
+    danger: 'bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/20',
+    ghost: 'bg-transparent text-gray-400 hover:text-gray-200 hover:bg-[#2a2a2a]',
   };
 
   const sizes = {
-    sm: 'text-xs px-2.5 py-1.5 gap-1.5',
+    sm: 'text-xs px-3 py-1.5 gap-1.5',
     md: 'text-sm px-4 py-2 gap-2',
-    lg: 'text-base px-5 py-2.5 gap-2',
+    lg: 'text-base px-6 py-3 gap-2',
   };
 
   const isDisabled = disabled || isLoading;

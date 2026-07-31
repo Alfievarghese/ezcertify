@@ -23,7 +23,9 @@ export interface ActiveObjectProps {
   textAlign?: string;
   fontWeight?: string | number;
   fontStyle?: string;
+  underline?: boolean;
   boundColumn?: string;
+  angle?: number;
 }
 
 export interface EditorState {

@@ -18,30 +18,30 @@ export default function ColumnSidebar() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="p-5 border-b-4 border-black bg-[#fef08a]">
-        <h2 className="text-sm font-black text-black uppercase tracking-tighter">
+    <div className="flex flex-col h-full bg-transparent">
+      <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
           Data Fields
         </h2>
-        <p className="text-xs text-black font-medium mt-1">
+        <p className="text-[11px] text-gray-500 mt-1">
           Drag fields onto the canvas.
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {/* Special QR Code Placeholder */}
         <div>
-          <h3 className="text-xs font-black text-black tracking-tighter mb-3 uppercase">Verification</h3>
+          <h3 className="text-[10px] font-semibold text-gray-500 tracking-wider mb-2 uppercase">Verification</h3>
           <motion.div
-            whileHover={{ x: -2, y: -2, boxShadow: '6px 6px 0px 0px rgba(0,0,0,1)' }}
-            whileTap={{ x: 4, y: 4, boxShadow: '0px 0px 0px 0px rgba(0,0,0,1)' }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             draggable
             onDragStart={(e) => handleDragStart(e as unknown as React.DragEvent<HTMLDivElement>, 'qr')}
-            className="flex items-center p-3 bg-[#bbf7d0] border-2 border-black rounded-none cursor-grab active:cursor-grabbing shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+            className="flex items-center p-3 bg-[#222] border border-[#333] rounded-lg cursor-grab active:cursor-grabbing hover:border-blue-500 hover:bg-[#2a2a2a] transition-colors"
           >
-            <GripVertical className="w-5 h-5 text-black mr-2 shrink-0" />
-            <QrCode className="w-5 h-5 text-black mr-3 shrink-0" />
-            <span className="text-sm font-bold text-black truncate">
+            <GripVertical className="w-4 h-4 text-gray-500 mr-2 shrink-0" />
+            <QrCode className="w-4 h-4 text-blue-400 mr-3 shrink-0" />
+            <span className="text-sm font-medium text-gray-200 truncate">
               QR Code
             </span>
           </motion.div>
@@ -49,25 +49,25 @@ export default function ColumnSidebar() {
 
         {/* Excel Columns */}
         <div>
-          <h3 className="text-xs font-black text-black tracking-tighter mb-3 uppercase">Excel Columns</h3>
-          <div className="space-y-4">
+          <h3 className="text-[10px] font-semibold text-gray-500 tracking-wider mb-2 uppercase">Excel Columns</h3>
+          <div className="space-y-2">
             {excelData.headers.map((header) => (
               <motion.div
                 key={header}
-                whileHover={{ x: -2, y: -2, boxShadow: '6px 6px 0px 0px rgba(0,0,0,1)' }}
-                whileTap={{ x: 4, y: 4, boxShadow: '0px 0px 0px 0px rgba(0,0,0,1)' }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 draggable
                 onDragStart={(e) => handleDragStart(e as unknown as React.DragEvent<HTMLDivElement>, 'text', header)}
-                className="flex items-center p-3 bg-white border-2 border-black rounded-none cursor-grab active:cursor-grabbing shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all group"
+                className="flex items-center p-3 bg-[#222] border border-[#333] rounded-lg cursor-grab active:cursor-grabbing hover:border-blue-500 hover:bg-[#2a2a2a] transition-colors group"
               >
-                <GripVertical className="w-5 h-5 text-black mr-2 shrink-0" />
-                <Type className="w-5 h-5 text-black mr-3 shrink-0" />
+                <GripVertical className="w-4 h-4 text-gray-600 group-hover:text-gray-500 mr-2 shrink-0 transition-colors" />
+                <Type className="w-4 h-4 text-gray-500 group-hover:text-gray-400 mr-3 shrink-0 transition-colors" />
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-bold text-black truncate">
+                  <span className="text-sm font-medium text-gray-200 truncate">
                     {header}
                   </span>
                   {/* Preview first row data */}
-                  <span className="text-xs font-medium text-gray-600 truncate mt-0.5">
+                  <span className="text-[11px] text-gray-500 truncate mt-0.5">
                     eg. {excelData.previewRows[0]?.[header] || 'Empty'}
                   </span>
                 </div>

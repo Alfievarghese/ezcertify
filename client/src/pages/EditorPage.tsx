@@ -25,14 +25,14 @@ export default function EditorPage() {
   if (!excelData || !templateData) return null;
 
   return (
-    <div className="h-screen max-h-screen flex flex-col bg-[#f0f0f0] overflow-hidden font-sans">
+    <div className="h-screen max-h-screen flex flex-col bg-[#111] overflow-hidden font-sans text-gray-200">
       {/* Header */}
-      <header className="h-20 bg-white border-b-4 border-black flex items-center justify-between px-6 shrink-0 z-20 shadow-[0_4px_0_0_rgba(0,0,0,1)]">
+      <header className="h-16 bg-[#1a1a1a] border-b border-[#2a2a2a] flex items-center justify-between px-6 shrink-0 z-20">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" onClick={() => navigate('/')} leftIcon={<ArrowLeft className="w-4 h-4" />}>
             Back
           </Button>
-          <h1 className="text-2xl font-black text-black hidden sm:block tracking-tighter uppercase">Template Editor</h1>
+          <h1 className="text-sm font-semibold text-white hidden sm:block tracking-wide">Template Editor</h1>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -51,19 +51,19 @@ export default function EditorPage() {
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Data Source */}
-        <aside className="w-72 bg-white border-r-4 border-black flex flex-col shrink-0 overflow-y-auto z-10 shadow-[4px_0_0_0_rgba(0,0,0,1)]">
+        <aside className="w-72 bg-[#1a1a1a] border-r border-[#2a2a2a] flex flex-col shrink-0 overflow-y-auto z-10">
           <ColumnSidebar />
         </aside>
 
         {/* Center - Canvas Area */}
-        <main className="flex-1 flex flex-col relative bg-[#f4f4f0] overflow-hidden">
+        <main className="flex-1 flex flex-col relative bg-[#111] overflow-hidden">
           <div className="absolute inset-0">
              <CanvasEditor />
           </div>
         </main>
 
         {/* Right Sidebar - Properties */}
-        <aside className="w-80 bg-white border-l-4 border-black flex flex-col shrink-0 overflow-y-auto z-10 shadow-[-4px_0_0_0_rgba(0,0,0,1)]">
+        <aside className="w-80 bg-[#1a1a1a] border-l border-[#2a2a2a] flex flex-col shrink-0 overflow-y-auto z-10">
           <PropertyPanel />
         </aside>
       </div>

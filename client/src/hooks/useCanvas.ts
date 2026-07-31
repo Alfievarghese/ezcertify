@@ -69,8 +69,9 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         originY: 'top',
         left: (containerWidth - imgWidth) / 2,
         top: (containerHeight - imgHeight) / 2,
-        selectable: false,
-        evented: false,
+        selectable: true,
+        evented: true,
+        lockRotation: true,
       });
       
       bgImageRef.current = img;
@@ -103,7 +104,9 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
           textAlign: obj.textAlign,
           fontWeight: obj.fontWeight,
           fontStyle: obj.fontStyle,
+          underline: obj.underline,
           boundColumn: obj.boundColumn,
+          angle: obj.angle,
         });
       }
     };
@@ -227,7 +230,11 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
        activeObject.set({ scaleX: 1, scaleY: 1 });
     }
     
-    activeObject.set(propertyUpdateSignal.key, propertyUpdateSignal.value);
+    // Convert angle to number if needed
+    let val = propertyUpdateSignal.value;
+    if (propertyUpdateSignal.key === 'angle') val = parseFloat(val) || 0;
+    
+    activeObject.set(propertyUpdateSignal.key, val);
     
     setActiveObjectProps((prev: any) => ({
       ...prev,
@@ -406,7 +413,9 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
         fontColor: obj.fill as string,
         fontWeight: obj.fontWeight as string,
         fontStyle: obj.fontStyle as string,
+        underline: obj.underline as boolean,
         textAlign: obj.textAlign as 'left' | 'center' | 'right',
+        angle: obj.angle || 0,
       };
     }).filter(Boolean) as Placeholder[];
   };

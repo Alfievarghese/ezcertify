@@ -66,14 +66,14 @@ export default function CanvasEditor() {
     <div 
       ref={containerRef}
       className={`w-full h-full flex items-center justify-center transition-colors relative bg-transparent ${
-        isDragOver ? 'ring-4 ring-black ring-inset bg-black/5' : ''
+        isDragOver ? 'ring-2 ring-blue-500 ring-inset bg-blue-500/5' : ''
       }`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       tabIndex={0}
       style={{
-        backgroundImage: 'radial-gradient(#cbd5e1 1.5px, transparent 0)',
+        backgroundImage: 'radial-gradient(#222 1.5px, transparent 0)',
         backgroundSize: '24px 24px'
       }}
     >
@@ -83,10 +83,10 @@ export default function CanvasEditor() {
       </div>
 
       {/* Navigation Hint */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-white border-2 border-black text-black text-[11px] font-black uppercase tracking-tighter rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex space-x-8 opacity-80 hover:opacity-100 transition-opacity z-10 select-none">
-        <span className="flex items-center"><span className="text-black mr-2">🔍</span> Cmd + Scroll to Zoom</span>
-        <span className="flex items-center"><span className="text-black mr-2">✋</span> Space + Drag to Pan</span>
-        <span className="flex items-center"><span className="text-black mr-2">⌨️</span> Del to Remove</span>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 px-6 py-2.5 bg-[#1a1a1a]/80 backdrop-blur-md border border-[#333] text-gray-300 text-[11px] font-medium tracking-wide rounded-full shadow-lg flex space-x-6 opacity-60 hover:opacity-100 transition-opacity z-10 select-none">
+        <span className="flex items-center"><span className="text-gray-500 mr-2">🔍</span> Cmd + Scroll to Zoom</span>
+        <span className="flex items-center"><span className="text-gray-500 mr-2">✋</span> Space + Drag to Pan</span>
+        <span className="flex items-center"><span className="text-gray-500 mr-2">⌨️</span> Del to Remove</span>
       </div>
     </div>
   );

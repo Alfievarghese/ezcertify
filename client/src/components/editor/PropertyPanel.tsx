@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEditorContext } from '../../context/EditorContext';
-import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Type as TypeIcon } from 'lucide-react';
+import { Type, AlignLeft, AlignCenter, AlignRight, Bold, Italic, Underline as UnderlineIcon, Type as TypeIcon } from 'lucide-react';
 
 export default function PropertyPanel() {
   const { 
@@ -23,14 +23,14 @@ export default function PropertyPanel() {
 
   if (!selectedId || !activeObjectProps) {
     return (
-      <div className="flex flex-col h-full bg-white">
-        <div className="p-5 border-b-4 border-black bg-[#fef08a]">
-          <h2 className="text-sm font-black text-black uppercase tracking-tighter">
+      <div className="flex flex-col h-full bg-transparent">
+        <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
             Properties
           </h2>
         </div>
         <div className="flex-1 flex items-center justify-center p-6 text-center">
-          <p className="text-sm font-bold text-black border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-sm text-gray-500">
             Select an element on the canvas to edit its properties.
           </p>
         </div>
@@ -39,24 +39,37 @@ export default function PropertyPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="p-5 border-b-4 border-black bg-[#fef08a]">
-        <h2 className="text-sm font-black text-black uppercase tracking-tighter">
+    <div className="flex flex-col h-full bg-transparent">
+      <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
           {isQR ? 'QR Properties' : 'Text Properties'}
         </h2>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         
+        {/* Common Properties */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-400 mb-2">Rotation Angle</label>
+          <div className="flex items-center bg-[#222] border border-[#333] rounded-lg focus-within:border-blue-500 transition-colors overflow-hidden">
+            <input 
+              type="number" 
+              className="w-full p-2 text-sm outline-none bg-transparent text-gray-200" 
+              value={activeObjectProps.angle ? Math.round(activeObjectProps.angle) : 0}
+              onChange={(e) => updateProp('angle', parseFloat(e.target.value) || 0)}
+            />
+            <span className="px-3 text-gray-500 text-sm">°</span>
+          </div>
+        </div>
         {/* QR Specific Properties */}
         {isQR && (
           <div className="space-y-6">
              <div>
-               <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">
+               <label className="block text-xs font-semibold text-gray-400 mb-2">
                  Bind Verification To
                </label>
                <select 
-                 className="w-full text-sm font-bold border-2 border-black bg-white p-2 text-black outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:translate-y-[2px] focus:translate-x-[2px] transition-all cursor-pointer appearance-none rounded-none"
+                 className="w-full text-sm bg-[#222] border border-[#333] rounded-lg p-2 text-gray-200 outline-none focus:border-blue-500 transition-colors cursor-pointer"
                  value={qrBoundColumn || ''}
                  onChange={(e) => setQrBoundColumn(e.target.value)}
                >
@@ -65,24 +78,24 @@ export default function PropertyPanel() {
                    <option key={h} value={h}>{h}</option>
                  ))}
                </select>
-               <p className="text-[11px] font-bold text-gray-600 mt-3 border-l-2 border-black pl-2">
+               <p className="text-[11px] text-gray-500 mt-2">
                  Value shown on verification page when scanned.
                </p>
              </div>
              
              <div className="grid grid-cols-2 gap-4">
                <div>
-                 <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Dark Color</label>
+                 <label className="block text-xs font-semibold text-gray-400 mb-2">Dark Color</label>
                  <div className="flex items-center space-x-2">
-                   <div className="w-8 h-8 rounded-none border-2 border-black bg-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"></div>
-                   <span className="text-xs text-black font-bold font-mono">#000000</span>
+                   <div className="w-6 h-6 rounded border border-[#333] bg-black cursor-pointer"></div>
+                   <span className="text-xs text-gray-400 font-mono">#000000</span>
                  </div>
                </div>
                <div>
-                 <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Light Color</label>
+                 <label className="block text-xs font-semibold text-gray-400 mb-2">Light Color</label>
                  <div className="flex items-center space-x-2">
-                   <div className="w-8 h-8 rounded-none border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"></div>
-                   <span className="text-xs text-black font-bold font-mono">#FFFFFF</span>
+                   <div className="w-6 h-6 rounded border border-[#333] bg-white cursor-pointer"></div>
+                   <span className="text-xs text-gray-400 font-mono">#FFFFFF</span>
                  </div>
                </div>
              </div>
@@ -93,9 +106,9 @@ export default function PropertyPanel() {
         {isText && (
           <div className="space-y-6">
             <div>
-              <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Font Family</label>
+              <label className="block text-xs font-semibold text-gray-400 mb-2">Font Family</label>
               <select 
-                className="w-full text-sm font-bold border-2 border-black bg-white p-2 text-black outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:translate-y-[2px] focus:translate-x-[2px] transition-all cursor-pointer appearance-none rounded-none"
+                className="w-full text-sm bg-[#222] border border-[#333] rounded-lg p-2 text-gray-200 outline-none focus:border-blue-500 transition-colors cursor-pointer"
                 value={activeObjectProps.fontFamily || 'Inter'}
                 onChange={(e) => updateProp('fontFamily', e.target.value)}
               >
@@ -105,16 +118,22 @@ export default function PropertyPanel() {
                 <option value="Montserrat">Montserrat</option>
                 <option value="Times New Roman">Times New Roman</option>
                 <option value="Arial">Arial</option>
+                <option value="Lora">Lora</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Nunito">Nunito</option>
+                <option value="Merriweather">Merriweather</option>
+                <option value="Oswald">Oswald</option>
+                <option value="Raleway">Raleway</option>
               </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Font Size</label>
-                <div className="flex items-center border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-within:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:translate-y-[2px] focus-within:translate-x-[2px] transition-all rounded-none">
+                <label className="block text-xs font-semibold text-gray-400 mb-2">Font Size</label>
+                <div className="flex items-center bg-[#222] border border-[#333] rounded-lg focus-within:border-blue-500 transition-colors overflow-hidden">
                   <input 
                     type="number" 
-                    className="w-full p-2 text-sm font-bold outline-none bg-transparent text-black" 
+                    className="w-full p-2 text-sm outline-none bg-transparent text-gray-200" 
                     value={activeObjectProps.fontSize ? Math.round(activeObjectProps.fontSize) : 24}
                     onChange={(e) => updateProp('fontSize', parseInt(e.target.value) || 24)}
                   />
@@ -122,17 +141,17 @@ export default function PropertyPanel() {
               </div>
               
               <div>
-                <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Fill Color</label>
-                <div className="flex items-center border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-within:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:translate-y-[2px] focus-within:translate-x-[2px] transition-all rounded-none">
+                <label className="block text-xs font-semibold text-gray-400 mb-2">Fill Color</label>
+                <div className="flex items-center bg-[#222] border border-[#333] rounded-lg focus-within:border-blue-500 transition-colors overflow-hidden">
                   <input 
                     type="color" 
-                    className="w-8 h-8 p-0 border-r-2 border-black bg-transparent cursor-pointer ml-1" 
+                    className="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer ml-1" 
                     value={activeObjectProps.fill || '#000000'}
                     onChange={(e) => updateProp('fill', e.target.value)}
                   />
                   <input 
                     type="text" 
-                    className="w-full p-2 text-sm font-bold outline-none bg-transparent text-black uppercase"
+                    className="w-full p-2 text-sm outline-none bg-transparent text-gray-200 uppercase"
                     value={activeObjectProps.fill || '#000000'}
                     onChange={(e) => updateProp('fill', e.target.value)}
                   />
@@ -141,51 +160,57 @@ export default function PropertyPanel() {
             </div>
 
             <div>
-              <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Alignment</label>
-              <div className="flex border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white divide-x-2 divide-black">
+              <label className="block text-xs font-semibold text-gray-400 mb-2">Alignment</label>
+              <div className="flex bg-[#222] border border-[#333] rounded-lg p-1">
                 <button 
                   onClick={() => updateProp('textAlign', 'left')}
-                  className={`flex-1 flex justify-center py-2 transition-colors ${activeObjectProps.textAlign === 'left' ? 'bg-[#bbf7d0] text-black shadow-inner' : 'text-black hover:bg-gray-100'}`}
+                  className={`flex-1 flex justify-center py-1.5 rounded-md transition-colors ${activeObjectProps.textAlign === 'left' ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}
                 >
-                  <AlignLeft className="w-5 h-5" />
+                  <AlignLeft className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => updateProp('textAlign', 'center')}
-                  className={`flex-1 flex justify-center py-2 transition-colors ${activeObjectProps.textAlign === 'center' || !activeObjectProps.textAlign ? 'bg-[#bbf7d0] text-black shadow-inner' : 'text-black hover:bg-gray-100'}`}
+                  className={`flex-1 flex justify-center py-1.5 rounded-md transition-colors ${activeObjectProps.textAlign === 'center' || !activeObjectProps.textAlign ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}
                 >
-                  <AlignCenter className="w-5 h-5" />
+                  <AlignCenter className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => updateProp('textAlign', 'right')}
-                  className={`flex-1 flex justify-center py-2 transition-colors ${activeObjectProps.textAlign === 'right' ? 'bg-[#bbf7d0] text-black shadow-inner' : 'text-black hover:bg-gray-100'}`}
+                  className={`flex-1 flex justify-center py-1.5 rounded-md transition-colors ${activeObjectProps.textAlign === 'right' ? 'bg-[#333] text-white shadow-sm' : 'text-gray-500 hover:text-gray-300'}`}
                 >
-                  <AlignRight className="w-5 h-5" />
+                  <AlignRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
             
             <div>
-               <label className="block text-xs font-black text-black uppercase tracking-tighter mb-2">Style</label>
-               <div className="flex space-x-3">
+               <label className="block text-xs font-semibold text-gray-400 mb-2">Style</label>
+               <div className="flex space-x-2">
                   <button 
                     onClick={() => updateProp('fontWeight', activeObjectProps.fontWeight === 'bold' ? 'normal' : 'bold')}
-                    className={`p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all rounded-none ${activeObjectProps.fontWeight === 'bold' ? 'bg-[#bbf7d0] text-black' : 'bg-white text-black'}`}
+                    className={`p-2 rounded-lg border transition-colors ${activeObjectProps.fontWeight === 'bold' ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : 'bg-[#222] border-[#333] text-gray-500 hover:text-gray-300'}`}
                   >
-                    <Bold className="w-5 h-5" />
+                    <Bold className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => updateProp('fontStyle', activeObjectProps.fontStyle === 'italic' ? 'normal' : 'italic')}
-                    className={`p-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all rounded-none ${activeObjectProps.fontStyle === 'italic' ? 'bg-[#bbf7d0] text-black' : 'bg-white text-black'}`}
+                    className={`p-2 rounded-lg border transition-colors ${activeObjectProps.fontStyle === 'italic' ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : 'bg-[#222] border-[#333] text-gray-500 hover:text-gray-300'}`}
                   >
-                    <Italic className="w-5 h-5" />
+                    <Italic className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => updateProp('underline', !activeObjectProps.underline)}
+                    className={`p-2 rounded-lg border transition-colors ${activeObjectProps.underline ? 'bg-blue-500/20 border-blue-500/50 text-blue-400' : 'bg-[#222] border-[#333] text-gray-500 hover:text-gray-300'}`}
+                  >
+                    <UnderlineIcon className="w-4 h-4" />
                   </button>
                </div>
             </div>
             
-            <div className="p-4 bg-[#fef08a] border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mt-8">
+            <div className="p-3 bg-[#222] border border-[#333] rounded-lg mt-8">
               <div className="flex items-start">
-                <TypeIcon className="w-5 h-5 text-black mt-0.5 mr-3 shrink-0" />
-                <p className="text-xs font-bold text-black leading-relaxed">
+                <TypeIcon className="w-4 h-4 text-gray-500 mt-0.5 mr-2 shrink-0" />
+                <p className="text-[11px] text-gray-400 leading-relaxed">
                   Text expands evenly from the center. Long text will automatically wrap or shrink to fit.
                 </p>
               </div>
