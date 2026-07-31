@@ -10,7 +10,7 @@ import MappingPreview from '../components/editor/MappingPreview';
 
 export default function EditorPage() {
   const navigate = useNavigate();
-  const { excelData, templateData, qrBoundColumn } = useEditorContext();
+  const { excelData, templateData } = useEditorContext();
   const [showPreview, setShowPreview] = useState(false);
 
   // Redirect if no data

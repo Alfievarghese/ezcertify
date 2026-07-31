@@ -43,6 +43,10 @@ export interface EditorState {
   // Signal to canvas to update active object property
   propertyUpdateSignal: { key: string; value: any; timestamp: number } | null;
   
+  // Layout placeholders extracted from canvas
+  placeholders: Placeholder[];
+  setPlaceholders: (placeholders: Placeholder[]) => void;
+  
   // The column explicitly bound to the QR code (if any)
   qrBoundColumn: string | null;
 }
@@ -69,6 +73,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [activeObjectProps, setActiveObjectProps] = useState<ActiveObjectProps | null>(null);
   const [propertyUpdateSignal, setPropertyUpdateSignal] = useState<{ key: string; value: any; timestamp: number } | null>(null);
 
+  const [placeholders, setPlaceholders] = useState<any[]>([]);
+
   const reset = () => {
     setSessionId(null);
     setExcelData(null);
@@ -77,6 +83,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     setQrBoundColumn(null);
     setActiveObjectProps(null);
     setPropertyUpdateSignal(null);
+    setPlaceholders([]);
   };
 
   return (
@@ -89,6 +96,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         qrBoundColumn,
         activeObjectProps,
         propertyUpdateSignal,
+        placeholders,
+        setPlaceholders,
         setSessionId,
         setExcelData,
         setTemplateData,
