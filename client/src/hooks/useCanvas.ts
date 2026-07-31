@@ -26,7 +26,7 @@ export interface Placeholder {
 
 export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, containerRef: React.RefObject<HTMLDivElement | null>) {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const { templateData, excelData, setSelectedId, setQrBoundColumn } = useEditorContext();
+  const { templateData, excelData, setSelectedId, setActiveObjectProps, propertyUpdateSignal } = useEditorContext();
   const bgImageRef = useRef<fabric.Image | null>(null);
 
   // Initialize Canvas
@@ -79,21 +79,41 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       fbCanvas.renderAll();
     });
 
-    // Event Listeners
-    fbCanvas.on('selection:created', (e) => {
-      if (e.selected && e.selected.length > 0) {
-        setSelectedId((e.selected[0] as any).id || null);
-      }
+    // Better selection styling
+    fabric.Object.prototype.set({
+      transparentCorners: false,
+      cornerColor: '#4c6ef5',
+      cornerStrokeColor: '#ffffff',
+      cornerSize: 8,
+      padding: 8,
+      borderColor: '#4c6ef5',
+      borderDashArray: [4, 4],
     });
+
+    // Event Listeners
+    const syncActiveObject = (e: any) => {
+      if (e.selected && e.selected.length > 0) {
+        const obj = e.selected[0] as any;
+        setSelectedId(obj.id || null);
+        setActiveObjectProps({
+          type: obj.customType,
+          fontFamily: obj.fontFamily,
+          fontSize: obj.fontSize,
+          fill: obj.fill,
+          textAlign: obj.textAlign,
+          fontWeight: obj.fontWeight,
+          fontStyle: obj.fontStyle,
+          boundColumn: obj.boundColumn,
+        });
+      }
+    };
+
+    fbCanvas.on('selection:created', syncActiveObject);
+    fbCanvas.on('selection:updated', syncActiveObject);
 
     fbCanvas.on('selection:cleared', () => {
       setSelectedId(null);
-    });
-    
-    fbCanvas.on('selection:updated', (e) => {
-      if (e.selected && e.selected.length > 0) {
-        setSelectedId((e.selected[0] as any).id || null);
-      }
+      setActiveObjectProps(null);
     });
 
     // Zoom and Pan Implementation
@@ -154,6 +174,53 @@ export function useCanvas(canvasRef: React.RefObject<HTMLCanvasElement | null>, 
       fbCanvas.dispose();
     };
   }, [templateData]); // Only re-init if template changes
+
+  // Listen for property update signals from the context
+  useEffect(() => {
+    if (!canvas || !propertyUpdateSignal) return;
+    
+    const activeObject = canvas.getActiveObject() as any;
+    if (!activeObject) return;
+
+    if (propertyUpdateSignal.key === 'fontSize') {
+       // Reset scaling so fontSize displays correctly
+       activeObject.set({ scaleX: 1, scaleY: 1 });
+    }
+    
+    activeObject.set(propertyUpdateSignal.key, propertyUpdateSignal.value);
+    
+    setActiveObjectProps((prev: any) => ({
+      ...prev,
+      [propertyUpdateSignal.key]: propertyUpdateSignal.value
+    }));
+    
+    canvas.requestRenderAll();
+  }, [propertyUpdateSignal, canvas, setActiveObjectProps]);
+
+  // Keyboard shortcuts (Delete)
+  useEffect(() => {
+    if (!canvas) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) {
+        return; // Don't delete if typing in inputs
+      }
+      
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        const activeObjects = canvas.getActiveObjects();
+        if (activeObjects.length > 0) {
+          activeObjects.forEach(obj => canvas.remove(obj));
+          canvas.discardActiveObject();
+          canvas.requestRenderAll();
+          setSelectedId(null);
+          setActiveObjectProps(null);
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [canvas, setSelectedId, setActiveObjectProps]);
 
   // Add a text placeholder for a column
   const addTextPlaceholder = (x: number, y: number, column: string) => {

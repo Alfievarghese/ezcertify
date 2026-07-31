@@ -15,6 +15,17 @@ export interface TemplateData {
   originalName: string;
 }
 
+export interface ActiveObjectProps {
+  type?: 'text' | 'qr';
+  fontFamily?: string;
+  fontSize?: number;
+  fill?: string;
+  textAlign?: string;
+  fontWeight?: string | number;
+  fontStyle?: string;
+  boundColumn?: string;
+}
+
 export interface EditorState {
   sessionId: string | null;
   excelData: ExcelData | null;
@@ -22,6 +33,12 @@ export interface EditorState {
   
   // Selected placeholder on the canvas
   selectedId: string | null;
+  
+  // Properties of the selected placeholder
+  activeObjectProps: ActiveObjectProps | null;
+  
+  // Signal to canvas to update active object property
+  propertyUpdateSignal: { key: string; value: any; timestamp: number } | null;
   
   // The column explicitly bound to the QR code (if any)
   qrBoundColumn: string | null;
@@ -33,6 +50,8 @@ interface EditorContextType extends EditorState {
   setTemplateData: (data: TemplateData) => void;
   setSelectedId: (id: string | null) => void;
   setQrBoundColumn: (column: string | null) => void;
+  setActiveObjectProps: (props: ActiveObjectProps | null) => void;
+  setPropertyUpdateSignal: (signal: { key: string; value: any; timestamp: number } | null) => void;
   reset: () => void;
 }
 
@@ -44,6 +63,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [templateData, setTemplateData] = useState<TemplateData | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [qrBoundColumn, setQrBoundColumn] = useState<string | null>(null);
+  const [activeObjectProps, setActiveObjectProps] = useState<ActiveObjectProps | null>(null);
+  const [propertyUpdateSignal, setPropertyUpdateSignal] = useState<{ key: string; value: any; timestamp: number } | null>(null);
 
   const reset = () => {
     setSessionId(null);
@@ -51,6 +72,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     setTemplateData(null);
     setSelectedId(null);
     setQrBoundColumn(null);
+    setActiveObjectProps(null);
+    setPropertyUpdateSignal(null);
   };
 
   return (
@@ -61,11 +84,15 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         templateData,
         selectedId,
         qrBoundColumn,
+        activeObjectProps,
+        propertyUpdateSignal,
         setSessionId,
         setExcelData,
         setTemplateData,
         setSelectedId,
         setQrBoundColumn,
+        setActiveObjectProps,
+        setPropertyUpdateSignal,
         reset,
       }}
     >

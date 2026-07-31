@@ -25,14 +25,14 @@ export default function EditorPage() {
   if (!excelData || !templateData) return null;
 
   return (
-    <div className="h-screen max-h-screen flex flex-col bg-surface-100 overflow-hidden">
+    <div className="h-screen max-h-screen flex flex-col bg-surface-950 overflow-hidden">
       {/* Header */}
-      <header className="h-16 bg-white border-b border-surface-200 flex items-center justify-between px-6 shrink-0 z-10 shadow-sm">
+      <header className="h-16 bg-surface-900 border-b border-surface-800 flex items-center justify-between px-6 shrink-0 z-10 shadow-sm">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="sm" onClick={() => navigate('/')} leftIcon={<ArrowLeft className="w-4 h-4" />}>
             Back
           </Button>
-          <h1 className="text-lg font-semibold text-surface-900 hidden sm:block">Template Editor</h1>
+          <h1 className="text-lg font-semibold text-surface-100 hidden sm:block">Template Editor</h1>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -51,19 +51,19 @@ export default function EditorPage() {
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Data Source */}
-        <aside className="w-64 bg-white border-r border-surface-200 flex flex-col shrink-0 overflow-y-auto">
+        <aside className="w-64 bg-surface-900 border-r border-surface-800 flex flex-col shrink-0 overflow-y-auto">
           <ColumnSidebar />
         </aside>
 
         {/* Center - Canvas Area */}
-        <main className="flex-1 flex flex-col relative bg-surface-50 overflow-hidden">
-          <div className="canvas-container absolute inset-0 bg-[#e5e5f7] bg-[radial-gradient(#444cf7_0.5px,transparent_0.5px)] [background-size:16px_16px] opacity-100">
+        <main className="flex-1 flex flex-col relative bg-surface-950 overflow-hidden">
+          <div className="absolute inset-0">
              <CanvasEditor />
           </div>
         </main>
 
         {/* Right Sidebar - Properties */}
-        <aside className="w-80 bg-white border-l border-surface-200 flex flex-col shrink-0 overflow-y-auto">
+        <aside className="w-80 bg-surface-900 border-l border-surface-800 flex flex-col shrink-0 overflow-y-auto z-10">
           <PropertyPanel />
         </aside>
       </div>

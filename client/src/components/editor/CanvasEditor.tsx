@@ -65,16 +65,21 @@ export default function CanvasEditor() {
   return (
     <div 
       ref={containerRef}
-      className={`w-full h-full flex items-center justify-center transition-colors relative ${
-        isDragOver ? 'bg-primary-50 ring-4 ring-primary-300 ring-inset' : ''
+      className={`w-full h-full flex items-center justify-center transition-colors relative bg-[#121212] ${
+        isDragOver ? 'ring-2 ring-primary-500 ring-inset' : ''
       }`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
+      tabIndex={0}
+      style={{
+        backgroundImage: 'radial-gradient(#2a2a2a 1px, transparent 0)',
+        backgroundSize: '20px 20px'
+      }}
     >
       {/* Fabric.js Canvas Wrapper */}
-      <div className="absolute inset-0 w-full h-full" id="canvas-wrapper">
-        <canvas ref={canvasRef} className="w-full h-full" />
+      <div className="absolute inset-0 w-full h-full focus:outline-none" id="canvas-wrapper">
+        <canvas ref={canvasRef} className="w-full h-full focus:outline-none" />
       </div>
       
       {isDragOver && (
@@ -86,9 +91,10 @@ export default function CanvasEditor() {
       )}
 
       {/* Navigation Hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-900/70 text-white text-xs rounded-full backdrop-blur-md flex space-x-4 opacity-70 hover:opacity-100 transition-opacity z-10">
-        <span>🖱️ Scroll to Zoom</span>
-        <span>✋ Alt + Drag to Pan</span>
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-5 py-2.5 bg-surface-800 border border-surface-700 text-surface-200 text-[11px] font-medium tracking-wide rounded-full shadow-lg flex space-x-6 opacity-60 hover:opacity-100 transition-opacity z-10 select-none">
+        <span className="flex items-center"><span className="text-surface-400 mr-2">🖱️</span> Scroll to Zoom</span>
+        <span className="flex items-center"><span className="text-surface-400 mr-2">✋</span> Alt + Drag to Pan</span>
+        <span className="flex items-center"><span className="text-surface-400 mr-2">⌨️</span> Del to Remove</span>
       </div>
     </div>
   );
